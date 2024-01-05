@@ -13,11 +13,32 @@ let playerLeft = {posX: 100, posY: height - 150, width: 90, height: 150} //wsad,
 let playerRight = {posX: width - 200, posY: height - 150, width: 90, height: 150} //nyilak, ctrl
 
 let allPlatforms = []
+let numOfPlatforms = 9
+//Mi az a canvas?
 
-for (let i = 0; i < 10; i++) {
-    let platform = {posX: random(200, width), posY: random(height - 200, height), width: 150, height: 50}
-    allPlatforms.push(platform) //Mi az a canvas?
-    
+function generatePlatform() {
+    return {posX: random(0, width - 150), posY: random(160, height - 200), width: 150, height: 50};
+}
+
+function checkProximity(platform, existingPlatforms, minDistance) {
+    for (let i = 0; i < existingPlatforms.length; i++) {
+        let distanceX = Math.abs(platform.posX - existingPlatforms[i].posX);
+        let distanceY = Math.abs(platform.posY - existingPlatforms[i].posY);
+
+        if (distanceX < minDistance && distanceY < minDistance) {
+            return true; // tul kozel van
+        }
+    }
+    return false;
+}
+
+for (let i = 0; i < numOfPlatforms; i++) {
+    let newPlatform;
+    do {
+        newPlatform = generatePlatform();
+    } while (checkProximity(newPlatform, allPlatforms, 240));
+
+    allPlatforms.push(newPlatform);
 }
 
 function move(){
@@ -37,11 +58,41 @@ function move(){
         
     }
 
+    let speed = 3
+
+    if (playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY) {
+        if (playerLeft.moveRight) {
+            playerLeft.posX = Math.min(playerLeft.posX + speed, width - playerLeft.width);
+        } else if (playerLeft.moveLeft) {
+            playerLeft.posX = Math.max(playerLeft.posX - speed, 0);
+        }
+        if (playerLeft.moveUp) {
+            playerLeft.posY = Math.max(playerLeft.posY - speed, 0);
+        } else if (playerLeft.moveDown) {
+            playerLeft.posY = Math.min(playerLeft.posY + speed, height - playerLeft.height);
+        }
+    }
+    
+    
+        if (playerRight.moveRight) {
+            playerRight.posX = Math.min(playerRight.posX + speed, width - playerRight.width);
+        } else if (playerRight.moveLeft) {
+            playerRight.posX = Math.max(playerRight.posX - speed, 0);
+        }
+        if (playerRight.moveUp) {
+            playerRight.posY = Math.max(playerRight.posY - speed, 0);
+        } else if (playerRight.moveDown) {
+            playerRight.posY = Math.min(playerRight.posY + speed, height - playerRight.height);
+        }
+    
 
 
 
 
-    requestAnimationFrame(move); // elvileg stabil 60 fps
+
+
+
+    requestAnimationFrame(move);
 }
 
 function drawPlatform(platform){
@@ -52,15 +103,54 @@ function drawPlatform(platform){
 move();
 window.addEventListener("keydown", keyDownEventListener)
 
-function keyDownEventListener(event){
-    if(event.key.toLowerCase() === 'w'){ //&& bumperY + bumperHeight < cvsHeight
-        console.log("w");
+
+function keyDownEventListener(event) {
+    if (event.key.toLowerCase() === 'd') {
+        playerLeft.moveRight = true;
+    } else if (event.key.toLowerCase() === 'a') {
+        playerLeft.moveLeft = true;
+    } else if (event.key.toLowerCase() === 'w') {
+        playerLeft.moveUp = true;
+    } else if (event.key.toLowerCase() === 's') {
+        playerLeft.moveDown = true;
     }
-    if(event.key == "ArrowUp"){
-        console.log("up");
+
+    if (event.key === 'ArrowRight') {
+        playerRight.moveRight = true;
+    } else if (event.key === 'ArrowLeft') {
+        playerRight.moveLeft = true;
+    } else if (event.key === 'ArrowUp') {
+        playerRight.moveUp = true;
+    } else if (event.key === 'ArrowDown') {
+        playerRight.moveDown = true;
+    }
+}
+
+function keyUpEventListener(event) {
+    if (event.key.toLowerCase() === 'd') {
+        playerLeft.moveRight = false;
+    } else if (event.key.toLowerCase() === 'a') {
+        playerLeft.moveLeft = false;
+    } else if (event.key.toLowerCase() === 'w') {
+        playerLeft.moveUp = false;
+    } else if (event.key.toLowerCase() === 's') {
+        playerLeft.moveDown = false;
+    }
+
+    if (event.key === 'ArrowRight') {
+        playerRight.moveRight = false;
+    } else if (event.key === 'ArrowLeft') {
+        playerRight.moveLeft = false;
+    } else if (event.key === 'ArrowUp') {
+        playerRight.moveUp = false;
+    } else if (event.key === 'ArrowDown') {
+        playerRight.moveDown = false;
     }
 }
 
 function random(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
+
+document.addEventListener('keydown', keyDownEventListener);
+document.addEventListener('keyup', keyUpEventListener);
