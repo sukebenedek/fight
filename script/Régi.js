@@ -14,6 +14,7 @@ let ballY = 0;
 let ballSpeed = 0;
 let ballYSpeed = 0;
 let ballYJumpSpeed = 0;
+let JumpMaxNumber = 2;
 
 
 function draw() {
@@ -26,6 +27,10 @@ function draw() {
         ballY = (cvsHeight-ballR)
         ballYJumpSpeed = 0;
         ballYSpeed = 0;
+    }
+    if (ballYSpeed == 0){
+        console.log('ja')
+        JumpMaxNumber = 0
     }
     if (ballX > cvsWidth - ballR) {
         ballX = (cvsWidth - ballR)
@@ -40,19 +45,24 @@ function draw() {
         ballYJumpSpeed = 0;
         ballYSpeed = 0;
     }
-    if (ballY > 90 && ballY < 95 && ballX < 121 && ballX > 89 ) {
-        ballY = 90
+    if (ballY > 190 && ballY < 195 && ballX < 121 && ballX > 89 ) {
+        ballY = 190
         ballYSpeed = 0;
     }
     c.fillStyle = "#000";
     c.fillRect(ballX, ballY, ballR, ballR);
-    c.fillRect(100, 100, 20, 5)
-
+    c.fillRect(100, 200, 20, 5)
+    console.log(JumpMaxNumber, ballYSpeed) //////////////////////////////////////////////
+    console.log()
 }
 
 function keyDownEventListener(event) {
     if (event.key == 'ArrowUp'){
-        ballYJumpSpeed += 2
+        if (JumpMaxNumber < 2){
+            ballYJumpSpeed += 2
+            JumpMaxNumber += 1
+
+        }
     }
     if (event.key == 'ArrowLeft'){
             ballSpeed -= 1;
