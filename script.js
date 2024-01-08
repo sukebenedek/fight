@@ -40,13 +40,13 @@ function draw() {
         ballYJumpSpeed = 0;
         ballYSpeed = 0;
     }
-    if (ballY > 90 && ballY < 95 && ballX < 121 && ballX > 89 ) {
+    if (ballY > 90 && ballY < 95 && ballX < 200 && ballX > 95 ) {
         ballY = 90
         ballYSpeed = 0;
     }
     c.fillStyle = "#000";
     c.fillRect(ballX, ballY, ballR, ballR);
-    c.fillRect(100, 100, 20, 5)
+    c.fillRect(100, 100, 100, 5)
 
 }
 
@@ -79,4 +79,4 @@ setInterval(function MovmentsXSlow(){
 })
 
 const interval = setInterval(draw, speed);
-window.addEventListener('keydown', keyDownEventListener);
+window.addEventListener('keydown', keyDownEventListener);9
