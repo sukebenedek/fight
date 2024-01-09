@@ -25,3 +25,10 @@ addEventListener("keyup", function(e){
     // if (e.code == 'ArrowDown') RspeedY = 0;
     // if (e.code == 'ArrowUp') RspeedY = 0;
 })
+
+addEventListener("keydown", function(e){
+    if (e.code == 'KeyF'){
+        console.log("f");
+        Shoot()
+    }
+})

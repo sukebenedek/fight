@@ -1,5 +1,7 @@
 const canvas = document.getElementById('cvs');
 const context = canvas.getContext('2d');
+let width = 1890
+let height = 860
 
 //Alap adatok
 const cvsHeight = 860;
@@ -13,21 +15,19 @@ const BaseHeight = 150;
 let Ground = false
 
 //Mozgáshoz Right
-let RpositionX = 600;
-let RpositionY = 0;
+let RpositionX = width - 150 - BaseWidth;
+let RpositionY = height - BaseHeight;
 let RspeedXLeft = 0;
 let RspeedXRight = 0;
 let RspeedY = 0;
 
 //Mozgáshoz Left
-let LpositionX = 0;
-let LpositionY = 0;
+let LpositionX = 150;
+let LpositionY = height - BaseHeight;
 let LspeedXLeft = 0;
 let LspeedXRight = 0;
 let LspeedY = 0;
 
-let width = 1890
-let height = 860
 canvas.width = width
 canvas.height = height
 
@@ -64,9 +64,22 @@ for (let i = 0; i < numOfPlatforms; i++) {
     allPlatforms.push(newPlatform);
 }
 
+let leftsBullets = []
+let rightsBullets = []
+let canLeftShoot = true
+let canRightShoot = true
+
+let bulletWidth = 40
+let bulletHeight = 10
+
+
+let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
+let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
+
+
 function move(){
-    let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
-    let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
+    playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
+    playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
     
@@ -83,6 +96,28 @@ function move(){
         drawPlatform(element)
 
     }
+
+    for (let i = leftsBullets.length - 1; i >= 0; i--) {
+        const element = leftsBullets[i];
+        element.posX += 10
+
+        if(element.posX > width){
+            leftsBullets.splice(element, 1)
+        }
+
+        drawBullet(element)
+
+    }
+
+    // for (let i = leftsBullets.length - 1; i >= 0; i--) {
+    //     const element = leftsBullets[i];
+
+    //     if(element.posX > width){
+    //         leftsBullets.splice(element, 1)
+    //         break;
+    //     }
+
+    // }
 
     // if (playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY) {
     //     if (playerLeft.moveRight) {
@@ -133,6 +168,11 @@ function move(){
 function drawPlatform(platform){
     context.fillStyle = 'orange';
     context.fillRect(platform.posX, platform.posY, platform.width, platform.height);
+}
+
+function drawBullet(bullet){
+    context.fillStyle = 'green';
+    context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
 }
 
 move();
@@ -221,4 +261,13 @@ function Limits(){
     if (RpositionX >= cvsWidth - BaseWidth){
         RpositionX = (cvsWidth - BaseWidth)
     }
+}
+
+
+function Shoot(){
+    let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY, width: bulletWidth, height: bulletHeight}
+    leftsBullets.push(currentLeftBullet)
+
+
+    console.log(leftsBullets[leftsBullets.length - 1]);
 }
