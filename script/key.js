@@ -1,8 +1,17 @@
+let xSpeed = 6
+let ySpeed = 15
+
 addEventListener("keydown", function(e){
-    if (e.code == 'KeyD') LspeedXRight = 6;
-    if (e.code == 'KeyA') LspeedXLeft = -6;
+    if (e.code == 'KeyD'){
+        LspeedXRight = xSpeed;
+        leftLastDir = "Right"
+    } 
+    if (e.code == 'KeyA'){
+        LspeedXLeft = -xSpeed;
+        leftLastDir = "Left"  
+    }
     // if (e.code == 'KeyS') LspeedY = 5;
-    if (e.code == 'KeyW') LspeedY = -15; Ground = false;
+    if (e.code == 'KeyW') LspeedY = -ySpeed; Ground = false;
 })
 
 addEventListener("keyup", function(e){
@@ -13,10 +22,16 @@ addEventListener("keyup", function(e){
 })
 
 addEventListener("keydown", function(e){
-    if (e.code == 'ArrowRight') RspeedXRight = 6;
-    if (e.code == 'ArrowLeft') RspeedXLeft = -6;
+    if (e.code == 'ArrowRight'){
+        RspeedXRight = xSpeed;
+        rightLastDir = "Right"
+    } 
+    if (e.code == 'ArrowLeft'){
+       RspeedXLeft = -xSpeed; 
+       rightLastDir = "Left"
+    } 
     // if (e.code == 'ArrowDown') RspeedY = 5;
-    if (e.code == 'ArrowUp') RspeedY = -15; Ground = false;
+    if (e.code == 'ArrowUp') RspeedY = -ySpeed; Ground = false;
 })
 
 addEventListener("keyup", function(e){
@@ -28,7 +43,12 @@ addEventListener("keyup", function(e){
 
 addEventListener("keydown", function(e){
     if (e.code == 'KeyF'){
-        console.log("f");
-        Shoot()
+        ShootLeft()
     }
 })
+
+document.addEventListener("keydown", function(e) {
+    if (e.code === 'ShiftRight') {
+        ShootRight()
+    }
+});

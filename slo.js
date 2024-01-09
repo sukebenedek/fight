@@ -3,6 +3,8 @@ const context = canvas.getContext('2d');
 let width = 1890
 let height = 860
 
+
+
 //Alap adatok
 const cvsHeight = 860;
 const cvsWidth = 1890;
@@ -28,6 +30,15 @@ let LspeedXLeft = 0;
 let LspeedXRight = 0;
 let LspeedY = 0;
 
+let allPlatforms = []
+let numOfPlatforms = 9
+//Mi az a canvas?
+
+let leftLastDir = "Right"
+let rightLastDir = "Left"
+
+let bulletSpeed = 12
+
 canvas.width = width
 canvas.height = height
 
@@ -35,9 +46,6 @@ context.fillStyle = 'white';
 context.fillRect(0, 0, width, height);
 
 
-let allPlatforms = []
-let numOfPlatforms = 9
-//Mi az a canvas?
 
 function generatePlatform() {
     return {posX: random(0, width - 150), posY: random(160, height - 200), width: 150, height: 50};
@@ -97,55 +105,93 @@ function move(){
 
     }
 
-    for (let i = leftsBullets.length - 1; i >= 0; i--) {
+    for (let i = 0; i < leftsBullets.length; i++) {
         const element = leftsBullets[i];
-        element.posX += 10
+        if (element.direction === "Left") {
+            element.posX -= bulletSpeed;
+            drawBullet(element);
+            if (element.posX < 0 - bulletHeight) {
 
-        if(element.posX > width){
-            leftsBullets.splice(element, 1)
+                leftsBullets.splice(i, 1)
+            }
         }
+    }
+    
+    for (let i = 0; i < leftsBullets.length; i++) {
+        const element = leftsBullets[i];
+        if (element.direction === "Right") {
+            element.posX += bulletSpeed;
+            drawBullet(element);
+            if (element.posX > width) {
+                leftsBullets.splice(i, 1);
 
-        drawBullet(element)
+            }
+        }
+    }
+    
+    for (let i = 0; i < leftsBullets.length; i++) {
+        const bullet = leftsBullets[i];
+        if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY)) {
+            clearInterval(moveInterval);
 
+            context.fillStyle = 'black';
+            context.textAlign = 'center';
+            context.font = '100px Comic Sans MS, sans-serif';
+            context.fillText('A job oldali játékos meghalt.', canvas.width / 2, canvas.height / 2);
+        }
+       
     }
 
-    // for (let i = leftsBullets.length - 1; i >= 0; i--) {
-    //     const element = leftsBullets[i];
+    for (let i = 0; i < rightsBullets.length; i++) {
+        const element = rightsBullets[i];
+        if (element.direction === "Left") {
+            element.posX -= bulletSpeed;
+            drawBullet(element);
+            if (element.posX < 0 - bulletHeight) {
 
-    //     if(element.posX > width){
-    //         leftsBullets.splice(element, 1)
-    //         break;
-    //     }
+                rightsBullets.splice(i, 1)
+            }
+        }
+    }
+    
+    for (let i = 0; i < rightsBullets.length; i++) {
+        const element = rightsBullets[i];
+        if (element.direction === "Right") {
+            element.posX += bulletSpeed;
+            drawBullet(element);
+            if (element.posX > width) {
+                rightsBullets.splice(i, 1);
 
-    // }
+            }
+        }
+    }
+    
+    for (let i = 0; i < rightsBullets.length; i++) {
+        const bullet = rightsBullets[i];
+        if (!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY)) {
+            clearInterval(moveInterval);
 
-    // if (playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY) {
-    //     if (playerLeft.moveRight) {
-    //         playerLeft.posX = Math.min(playerLeft.posX + speed, width - playerLeft.width);
-    //     } else if (playerLeft.moveLeft) {
-    //         playerLeft.posX = Math.max(playerLeft.posX - speed, 0);
-    //     }
-    //     if (playerLeft.moveUp) {
-    //         playerLeft.posY = Math.max(playerLeft.posY - speed, 0);
-    //     } else if (playerLeft.moveDown) {
-    //         playerLeft.posY = Math.min(playerLeft.posY + speed, height - playerLeft.height);
-    //     }
-    // }
+            context.fillStyle = 'black';
+            context.textAlign = 'center';
+            context.font = '100px Comic Sans MS, sans-serif';
+            context.fillText('A bal oldali játékos meghalt.', canvas.width / 2, canvas.height / 2);
+        }
+       
+    }
 
+    for (let i = 0; i < leftsBullets.length; i++) {
+        const element = leftsBullets[i];
+        for (let j = 0; j < allPlatforms.length; j++) {
+            const element1 = allPlatforms[j];
+            if (!(element.posX > element1.posX + element1.width || element.posX + element.width < element1.posX || element.posY > element1.posY + element1.height || element.posY + element.height < element1.posY)) {
+                leftsBullets.splice(i, 1);
+    
+            }
+        }
+    }
 
-    //     if (playerRight.moveRight) {
-    //         playerRight.posX = Math.min(playerRight.posX + speed, width - playerRight.width);
-    //     } else if (playerRight.moveLeft) {
-    //         playerRight.posX = Math.max(playerRight.posX - speed, 0);
-    //     }
-    //     if (playerRight.moveUp) {
-    //         playerRight.posY = Math.max(playerRight.posY - speed, 0);
-    //     } else if (playerRight.moveDown) {
-    //         playerRight.posY = Math.min(playerRight.posY + speed, height - playerRight.height);
-    //     }
-
-
-        // console.log('Done')
+    // if (!(playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY)) {
+    //collision detection
 
     LpositionX += LspeedXLeft;
     LpositionX += LspeedXRight;
@@ -162,7 +208,6 @@ function move(){
 
 
 
-    requestAnimationFrame(move);
 }
 
 function drawPlatform(platform){
@@ -175,52 +220,7 @@ function drawBullet(bullet){
     context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
 }
 
-move();
-
-
-// function keyDownEventListener(event) {
-//     if (event.key.toLowerCase() === 'd') {
-//         playerLeft.moveRight = true;
-//     } else if (event.key.toLowerCase() === 'a') {
-//         playerLeft.moveLeft = true;
-//     } else if (event.key.toLowerCase() === 'w') {
-//         playerLeft.moveUp = true;
-//     } else if (event.key.toLowerCase() === 's') {
-//         playerLeft.moveDown = true;
-//     }
-
-//     if (event.key === 'ArrowRight') {
-//         playerRight.moveRight = true;
-//     } else if (event.key === 'ArrowLeft') {
-//         playerRight.moveLeft = true;
-//     } else if (event.key === 'ArrowUp') {
-//         playerRight.moveUp = true;
-//     } else if (event.key === 'ArrowDown') {
-//         playerRight.moveDown = true;
-//     }
-// }
-
-// function keyUpEventListener(event) {
-//     if (event.key.toLowerCase() === 'd') {
-//         playerLeft.moveRight = false;
-//     } else if (event.key.toLowerCase() === 'a') {
-//         playerLeft.moveLeft = false;
-//     } else if (event.key.toLowerCase() === 'w') {
-//         playerLeft.moveUp = false;
-//     } else if (event.key.toLowerCase() === 's') {
-//         playerLeft.moveDown = false;
-//     }
-
-//     if (event.key === 'ArrowRight') {
-//         playerRight.moveRight = false;
-//     } else if (event.key === 'ArrowLeft') {
-//         playerRight.moveLeft = false;
-//     } else if (event.key === 'ArrowUp') {
-//         playerRight.moveUp = false;
-//     } else if (event.key === 'ArrowDown') {
-//         playerRight.moveDown = false;
-//     }
-// }
+let moveInterval = setInterval(move, 1000/60)
 
 function random(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -234,7 +234,6 @@ setInterval (function Gravity(){
 })
 
 function Limits(){
-    // Letf
     if (LpositionY >= cvsHeight - BaseHeight){
         LpositionY = (cvsHeight - BaseHeight)
     }
@@ -254,7 +253,6 @@ function Limits(){
         }
     }
 
-    // Rightdd
     if (RpositionY >= cvsHeight - BaseHeight){
         RpositionY = (cvsHeight - BaseHeight)
     }
@@ -276,10 +274,20 @@ function Limits(){
 }
 
 
-function Shoot(){
-    let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY, width: bulletWidth, height: bulletHeight}
-    leftsBullets.push(currentLeftBullet)
+function ShootLeft(){
+    if(canLeftShoot){
+        let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + 35, width: bulletWidth, height: bulletHeight, direction: leftLastDir}
+        leftsBullets.push(currentLeftBullet)
+    }
 
 
-    console.log(leftsBullets[leftsBullets.length - 1]);
+}
+
+function ShootRight(){
+    if(canRightShoot){
+        let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + 35, width: bulletWidth, height: bulletHeight, direction: rightLastDir}
+        rightsBullets.push(currentRightBullet)
+    }
+
+
 }
