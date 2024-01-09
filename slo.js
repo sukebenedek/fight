@@ -3,7 +3,7 @@ const context = canvas.getContext('2d');
 let width = 1890
 let height = 860
 
-
+let delayBetweenShots = 500 //ms
 
 //Alap adatok
 const cvsHeight = 860;
@@ -44,8 +44,6 @@ canvas.height = height
 
 context.fillStyle = 'white';
 context.fillRect(0, 0, width, height);
-
-
 
 function generatePlatform() {
     return {posX: random(0, width - 150), posY: random(160, height - 200), width: 150, height: 50};
@@ -190,6 +188,17 @@ function move(){
         }
     }
 
+    for (let i = 0; i < rightsBullets.length; i++) {
+        const element = rightsBullets[i];
+        for (let j = 0; j < allPlatforms.length; j++) {
+            const element1 = allPlatforms[j];
+            if (!(element.posX > element1.posX + element1.width || element.posX + element.width < element1.posX || element.posY > element1.posY + element1.height || element.posY + element.height < element1.posY)) {
+                rightsBullets.splice(i, 1);
+    
+            }
+        }
+    }
+
     // if (!(playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY)) {
     //collision detection
 
@@ -236,6 +245,8 @@ setInterval (function Gravity(){
 function Limits(){
     if (LpositionY >= cvsHeight - BaseHeight){
         LpositionY = (cvsHeight - BaseHeight)
+        canLeftJump = true
+
     }
     if (LpositionY <= 0){
         LpositionY = 0
@@ -250,11 +261,14 @@ function Limits(){
         if (LpositionY > (allPlatforms[index].posY - BaseHeight) && LpositionY < (allPlatforms[index].posY - BaseHeight + 20) && LpositionX >= allPlatforms[index].posX - BaseWidth && LpositionX <= (allPlatforms[index].posX + allPlatforms[index].width)){
             LpositionY = (allPlatforms[index].posY - BaseHeight)
             LspeedY = 0
+            canLeftJump = true
         }
     }
 
     if (RpositionY >= cvsHeight - BaseHeight){
         RpositionY = (cvsHeight - BaseHeight)
+        canRightJump = true
+
     }
     if (RpositionY <= 0){
         RpositionY = 0
@@ -269,6 +283,7 @@ function Limits(){
         if (RpositionY > (allPlatforms[index].posY - BaseHeight) && RpositionY < (allPlatforms[index].posY - BaseHeight + 20) && RpositionX >= allPlatforms[index].posX - BaseWidth && RpositionX <= (allPlatforms[index].posX + allPlatforms[index].width)){
             RpositionY = (allPlatforms[index].posY - BaseHeight)
             RspeedY = 0
+            canRightJump = true
         }
     }
 }
@@ -278,6 +293,11 @@ function ShootLeft(){
     if(canLeftShoot){
         let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + 35, width: bulletWidth, height: bulletHeight, direction: leftLastDir}
         leftsBullets.push(currentLeftBullet)
+        canLeftShoot = false
+
+        setTimeout(function () {
+            canLeftShoot = true;
+        }, delayBetweenShots);
     }
 
 
@@ -287,6 +307,11 @@ function ShootRight(){
     if(canRightShoot){
         let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + 35, width: bulletWidth, height: bulletHeight, direction: rightLastDir}
         rightsBullets.push(currentRightBullet)
+        canRightShoot = false
+
+        setTimeout(function () {
+            canRightShoot = true;
+        }, delayBetweenShots);
     }
 
 

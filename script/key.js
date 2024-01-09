@@ -1,6 +1,9 @@
 let xSpeed = 6
 let ySpeed = 15
 
+let canLeftJump = true
+let canRightJump = true
+
 addEventListener("keydown", function(e){
     if (e.code == 'KeyD'){
         LspeedXRight = xSpeed;
@@ -11,7 +14,13 @@ addEventListener("keydown", function(e){
         leftLastDir = "Left"  
     }
     // if (e.code == 'KeyS') LspeedY = 5;
-    if (e.code == 'KeyW') LspeedY = -ySpeed; Ground = false;
+    if (e.code == 'KeyW'){
+        if(canLeftJump){
+            LspeedY = -ySpeed; Ground = false;
+            canLeftJump = false
+            
+        }
+    }
 })
 
 addEventListener("keyup", function(e){
@@ -31,7 +40,13 @@ addEventListener("keydown", function(e){
        rightLastDir = "Left"
     } 
     // if (e.code == 'ArrowDown') RspeedY = 5;
-    if (e.code == 'ArrowUp') RspeedY = -ySpeed; Ground = false;
+    if (e.code == 'ArrowUp'){
+        if(canRightJump){
+            RspeedY = -ySpeed; Ground = false;
+            canRightJump = false
+            
+        }
+    }
 })
 
 addEventListener("keyup", function(e){
