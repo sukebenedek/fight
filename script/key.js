@@ -13,7 +13,7 @@ addEventListener("keydown", function(e){
         LspeedXLeft = -xSpeed;
         leftLastDir = "Left"  
     }
-    // if (e.code == 'KeyS') LspeedY = 5;
+    if (e.code == 'KeyS') LspeedY = 10;
     if (e.code == 'KeyW'){
         if(canLeftJump){
             LspeedY = -ySpeed; Ground = false;
@@ -26,7 +26,7 @@ addEventListener("keydown", function(e){
 addEventListener("keyup", function(e){
     if (e.code == 'KeyD') LspeedXRight = 0;
     if (e.code == 'KeyA') LspeedXLeft = 0;
-    // if (e.code == 'KeyS') LspeedY = 0;
+    if (e.code == 'KeyS') LspeedY = 0;
     // if (e.code == 'KeyW') LspeedY = 0;
 })
 
@@ -39,7 +39,7 @@ addEventListener("keydown", function(e){
        RspeedXLeft = -xSpeed; 
        rightLastDir = "Left"
     } 
-    // if (e.code == 'ArrowDown') RspeedY = 5;
+    if (e.code == 'ArrowDown') RspeedY = 10;
     if (e.code == 'ArrowUp'){
         if(canRightJump){
             RspeedY = -ySpeed; Ground = false;
@@ -52,7 +52,7 @@ addEventListener("keydown", function(e){
 addEventListener("keyup", function(e){
     if (e.code == 'ArrowRight') RspeedXRight = 0;
     if (e.code == 'ArrowLeft') RspeedXLeft = 0;
-    // if (e.code == 'ArrowDown') RspeedY = 0;
+    if (e.code == 'ArrowDown') RspeedY = 0;
     // if (e.code == 'ArrowUp') RspeedY = 0;
 })
 
