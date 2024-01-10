@@ -39,6 +39,8 @@ let rightLastDir = "Left"
 
 let bulletSpeed = 12
 
+let akDeployed = false
+
 canvas.width = width
 canvas.height = height
 
@@ -94,22 +96,38 @@ let platform0 = document.getElementById("platform0");
 let platform1 = document.getElementById("platform1");
 let platform2 = document.getElementById("platform2");
 
+let background = document.getElementById("background");
+
 let platformImgs = [platform0, platform1, platform2]
 
 let framesBetweenAnimations = 20;
 let frames = 0
 
+
+
 function move(){
     playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
     playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
+    
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
+    // context.drawImage(background, 0, 0, width, height);
+
     
     for (let i = 0; i < allPlatforms.length; i++) {
         const element = allPlatforms[i];
     
         drawPlatform(element)
     
+    }
+
+    if(akDeployed){
+        context.fillStyle = 'yellow';
+        context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
+        if (ak.posY < 50){
+            ak.posY += xSpeed / 2
+
+        }
     }
     
     frames++
@@ -383,7 +401,6 @@ function Limits(){
     }
 }
 
-
 let gunPos = 77
 
 function ShootLeft(){
@@ -396,8 +413,6 @@ function ShootLeft(){
             canLeftShoot = true;
         }, delayBetweenShots);
     }
-
-
 }
 
 function ShootRight(){
@@ -410,6 +425,16 @@ function ShootRight(){
             canRightShoot = true;
         }, delayBetweenShots);
     }
-
-
 }
+
+//12000, 20000
+let timeOfAk = random(1000, 1000)
+
+let ak = {posX: random(0, width - 200), posY: -200, width: 200, height: 100}
+
+function akCall() {
+    console.log("ak");
+    akDeployed = true
+}
+
+setTimeout(akCall, timeOfAk);

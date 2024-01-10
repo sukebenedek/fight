@@ -9,18 +9,24 @@
     
 </body>
 <script>
-let i = 0;
+// let i = 0;
 
-function move() {
-    i += 1;
-    console.log(i);
-    requestAnimationFrame(move);
-}
+// function move() {
+//     i += 1;
+//     console.log(i);
+//     requestAnimationFrame(move);
+// }
 
-move();
+// move();
 
-setInterval(() => {
-    i = 0;
-}, 1000);
+// setInterval(() => {
+//     i = 0;
+// }, 1000);
+
+let play = {pos: 50}
+let a = play
+play.pos = 100
+
+console.log(a.pos);
 </script>
 </html>
