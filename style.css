@@ -24,3 +24,7 @@ div {
     top: 1px;
     right: 10px;
 }
+
+img{
+    display: none;
+}
