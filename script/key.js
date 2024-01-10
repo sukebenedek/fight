@@ -18,7 +18,9 @@ addEventListener("keydown", function(e){
         leftLastDir = "Left"  
         leftRun = true
     }
-    if (e.code == 'KeyS') LspeedY = 10;
+    if (e.code == 'KeyS'){
+        LspeedY = 10;
+    } 
     if (e.code == 'KeyW'){
         if(canLeftJump){
             LspeedY = -ySpeed; Ground = false;
@@ -52,7 +54,9 @@ addEventListener("keydown", function(e){
        rightLastDir = "Left"
        rightRun = true
     } 
-    if (e.code == 'ArrowDown') RspeedY = 10;
+    if (e.code == 'ArrowDown'){
+        RspeedY = 10;
+    }
     if (e.code == 'ArrowUp'){
         if(canRightJump){
             RspeedY = -ySpeed; Ground = false;

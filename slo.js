@@ -347,10 +347,13 @@ let moveInterval = setInterval(move, 1000/60)
 function random(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
-
-setInterval (function Gravity(){
+setInterval (function GravityL(){
     if (Ground == false){
         LspeedY += 0.09;
+    }
+})
+setInterval (function GravityR(){
+    if (Ground == false){
         RspeedY += 0.09;
     }
 })
@@ -363,6 +366,7 @@ function Limits(){
     }
     if (LpositionY <= 0){
         LpositionY = 0
+        LspeedY = 0
     }
     if (LpositionX <= 0){
         LpositionX = 0
@@ -385,6 +389,7 @@ function Limits(){
     }
     if (RpositionY <= 0){
         RpositionY = 0
+        RspeedY = 0
     }
     if (RpositionX <= 0){
         RpositionX = 0
