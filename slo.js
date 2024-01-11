@@ -3,6 +3,8 @@ const context = canvas.getContext('2d');
 let width = 1890
 let height = 800
 
+let maxHp = 3
+
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
 let cookie = document.cookie
@@ -95,8 +97,8 @@ let bulletWidth = 40
 let bulletHeight = 10
 
 
-let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
-let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
+let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
+let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
 
 let leftPlayerImage = document.getElementById("leftPlayerImage");
 let leftPlayerImageLeft = document.getElementById("leftPlayerImageLeft");
@@ -123,6 +125,8 @@ let frames = 0
 
 let playerWhoHasAk;
 
+let hpBar = {width: 110, height: 20}
+
 function updateScore(){
     let cookies = document.cookie
     let score = (Number(cookies.split(":")[0]) + Number(localScore.split(":")[0])) + ":" + (Number(cookies.split(":")[1]) + Number(localScore.split(":")[1]))
@@ -132,13 +136,63 @@ function updateScore(){
     localScore = "0:0"
 }
 
+function updateHp(){
+    let leftHpPixel =hpBar.width * (playerLeft.hp / maxHp)
+    let rightHpPixel =hpBar.width * (playerRight.hp / maxHp)
+
+    if(playerLeft.hp == 0){
+        context.fillStyle = 'red';
+    }
+    else{
+        context.fillStyle = 'white';
+    }
+    context.fillRect(playerLeft.posX - (hpBar.width - playerLeft.width) / 2, playerLeft.posY - 40, hpBar.width, hpBar.height);
+
+    if(playerRight.hp == 0){
+        context.fillStyle = 'red';
+    }
+    else{
+        context.fillStyle = 'white';
+    }
+    context.fillRect(playerRight.posX - (hpBar.width - playerRight.width) / 2, playerRight.posY - 40, hpBar.width, hpBar.height);
+
+    if (playerLeft.hp <= maxHp / 3){
+        context.fillStyle = 'red';
+    }
+    else if(playerLeft.hp <= (maxHp / 3) * 2){
+        context.fillStyle = 'yellow';
+    }
+    else{
+        context.fillStyle = 'green';
+    }
+    context.fillRect(playerLeft.posX - (hpBar.width - playerLeft.width) / 2, playerLeft.posY - 40, leftHpPixel, hpBar.height);
+
+    if (playerRight.hp <= maxHp / 3){
+        context.fillStyle = 'red';
+    }
+    else if(playerRight.hp <= (maxHp / 3) * 2){
+        context.fillStyle = 'yellow';
+    }
+    else{
+        context.fillStyle = 'green';
+    }
+    context.fillRect(playerRight.posX - (hpBar.width - playerRight.width) / 2, playerRight.posY - 40, rightHpPixel, hpBar.height);
+    
+}
+
 
 updateScore()
 function move(){
-    
-    playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
-    playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
-    
+    playerLeft.posX = LpositionX
+    playerLeft.posY = LpositionY
+    playerLeft.width = BaseWidth
+    playerLeft.height = BaseHeight
+
+    playerRight.posX = RpositionX
+    playerRight.posY = RpositionY
+    playerRight.width = BaseWidth
+    playerRight.height = BaseHeight
+
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
     context.drawImage(background, 0, 0, width, height + heightOfGround);
@@ -187,7 +241,7 @@ function move(){
 
         }
     }
-    
+
     frames++
     if(leftRun){
         if (leftLastDir == "Right") {
@@ -261,6 +315,7 @@ function move(){
         }
     }
 
+    updateHp()
 
     for (let i = 0; i < leftsBullets.length; i++) {
         const element = leftsBullets[i];
@@ -289,24 +344,27 @@ function move(){
     for (let i = 0; i < leftsBullets.length; i++) {
         const bullet = leftsBullets[i];
         if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY  && !end)) {
-            localScore = "1:0"
-            updateScore()
-            end = true
-            clearInterval(moveInterval);
-
-            context.fillStyle = 'black';
-            context.textAlign = 'center';
-            context.font = '100px Comic Sans MS, sans-serif';
-            context.shadowColor = 'white';
-            context.shadowBlur = 4;
-            context.shadowOffsetX = 2;
-            context.shadowOffsetY = 2;
-
-            // Ezt en csinaltam //Pali
-            context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
-
+            playerRight.hp -= 1
+            leftsBullets.splice(i, 1)
+            updateHp()
+            if(playerRight.hp <= 0){
+                localScore = "1:0"
+                updateScore()
+                end = true
+                clearInterval(moveInterval);
+    
+                context.fillStyle = 'black';
+                context.textAlign = 'center';
+                context.font = '100px Comic Sans MS, sans-serif';
+                context.shadowColor = 'white';
+                context.shadowBlur = 4;
+                context.shadowOffsetX = 2;
+                context.shadowOffsetY = 2;
+    
+                // Ezt en csinaltam //Pali
+                context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+            }
         }
-       
     }
 
     for (let i = 0; i < rightsBullets.length; i++) {
@@ -336,22 +394,28 @@ function move(){
     for (let i = 0; i < rightsBullets.length; i++) {
         const bullet = rightsBullets[i];
         if ((!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY) && !end)) {
-            localScore = "0:1"
-            updateScore()
-            end = true
-            clearInterval(moveInterval);
+            
+            playerLeft.hp -= 1
+            rightsBullets.splice(i, 1)
+            updateHp()
+            if(playerLeft.hp <= 0){
+                localScore = "0:1"
+                updateScore()
+                end = true
+                clearInterval(moveInterval);
 
-            context.fillStyle = 'black';
-            context.textAlign = 'center';
-            context.font = '100px Comic Sans MS, sans-serif';
+                context.fillStyle = 'black';
+                context.textAlign = 'center';
+                context.font = '100px Comic Sans MS, sans-serif';
 
-            context.shadowColor = 'white';
-            context.shadowBlur = 4;
-            context.shadowOffsetX = 2;
-            context.shadowOffsetY = 2;
+                context.shadowColor = 'white';
+                context.shadowBlur = 4;
+                context.shadowOffsetX = 2;
+                context.shadowOffsetY = 2;
 
-            // Ezt en csinaltam //Ezt is a Pali
-            context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+                // Ezt en csinaltam //Ezt is a Pali
+                context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+            }
         }
        
     }
