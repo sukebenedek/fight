@@ -1,4 +1,3 @@
 meccs elejen legyen 3s a menekülésre mielőtt lőni lehet, countdown
 hp
-animacio
 win count

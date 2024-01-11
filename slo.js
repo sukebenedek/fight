@@ -42,8 +42,9 @@ let bulletSpeed = 12
 
 let akDeployed = false
 
+let heightOfGround = 50
 canvas.width = width
-canvas.height = height
+canvas.height = height + heightOfGround
 
 context.fillStyle = 'white';
 context.fillRect(0, 0, width, height);
@@ -115,7 +116,7 @@ function move(){
     
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
-    // context.drawImage(background, 0, 0, width, height);
+    context.drawImage(background, 0, 0, width, height + heightOfGround);
 
     
     for (let i = 0; i < allPlatforms.length; i++) {
@@ -267,7 +268,8 @@ function move(){
             context.fillStyle = 'black';
             context.textAlign = 'center';
             context.font = '100px Comic Sans MS, sans-serif';
-            context.fillText('A bal oldali játékos nyert.', canvas.width / 2, canvas.height / 2);
+            // Ezt en csinaltam
+            context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
         }
        
     }
@@ -304,7 +306,8 @@ function move(){
             context.fillStyle = 'black';
             context.textAlign = 'center';
             context.font = '100px Comic Sans MS, sans-serif';
-            context.fillText('A jobb oldali játékos nyert.', canvas.width / 2, canvas.height / 2);
+            // Ezt en csinaltam
+            context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
         }
        
     }
@@ -369,7 +372,7 @@ function drawPlatform(platform){
 }
 
 function drawBullet(bullet){
-    context.fillStyle = 'green';
+    context.fillStyle = 'orange';
     context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
 }
 
@@ -472,7 +475,7 @@ function ShootRight(){
         else{
             setTimeout(function () {
                 canRightShoot = true;
-            }, delayBetweenAkShots);
+            }, delayBetweenShots);
         }
     }
 }
