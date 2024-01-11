@@ -83,10 +83,16 @@ addEventListener("keydown", function(e){
     if (e.code == 'KeyF'){
         ShootLeft()
     }
+    if (end && e.code === 'KeyE'){
+        location.reload()
+    }
 })
 
-document.addEventListener("keydown", function(e) {
+addEventListener("keydown", function(e) {
     if (e.code === 'ShiftRight') {
         ShootRight()
+    }
+    if (end && e.code === 'Enter'){
+        location.reload()
     }
 });

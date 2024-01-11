@@ -16,6 +16,8 @@ else{
 
 let localScore = "0:0"
 
+let end = false
+
 //Alap adatok
 const cvsHeight = height;
 const cvsWidth = width;
@@ -286,15 +288,21 @@ function move(){
     
     for (let i = 0; i < leftsBullets.length; i++) {
         const bullet = leftsBullets[i];
-        if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY)) {
+        if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY  && !end)) {
             localScore = "1:0"
-            updateScore()            
+            updateScore()
+            end = true
             clearInterval(moveInterval);
 
             context.fillStyle = 'black';
             context.textAlign = 'center';
             context.font = '100px Comic Sans MS, sans-serif';
-            // Ezt en csinaltam
+            context.shadowColor = 'white';
+            context.shadowBlur = 4;
+            context.shadowOffsetX = 2;
+            context.shadowOffsetY = 2;
+
+            // Ezt en csinaltam //Pali
             context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
 
         }
@@ -327,15 +335,22 @@ function move(){
     
     for (let i = 0; i < rightsBullets.length; i++) {
         const bullet = rightsBullets[i];
-        if (!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY)) {
+        if ((!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY) && !end)) {
             localScore = "0:1"
-            updateScore()  
+            updateScore()
+            end = true
             clearInterval(moveInterval);
 
             context.fillStyle = 'black';
             context.textAlign = 'center';
             context.font = '100px Comic Sans MS, sans-serif';
-            // Ezt en csinaltam
+
+            context.shadowColor = 'white';
+            context.shadowBlur = 4;
+            context.shadowOffsetX = 2;
+            context.shadowOffsetY = 2;
+
+            // Ezt en csinaltam //Ezt is a Pali
             context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
         }
        
@@ -512,7 +527,7 @@ function ShootRight(){
 //12000, 20000
 let timeOfAk = random(8000, 1400)
 
-let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 120}
+let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
 
 function akCall() {
     // console.log("ak");

@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lövöldözés</title>
     <link rel="stylesheet" href="style.css">
     
 </head>
 <body>
-    <canvas id="cvs"></canvas>
-    <input type="button"  id="startButton" value="Restart" onclick="location.reload()">
-    <input type="button"  id="zeroButton" value="Pontnullázó" onclick="document.cookie = '0:0'; updateScore()">
-    <div id="points">0:0</div>
+    <div class="center">
+        <canvas id="cvs"></canvas>
+        <input type="button"  id="startButton" value="Restart" onclick="location.reload()">
+        <input type="button"  id="zeroButton" value="Pontnullázó" onclick="document.cookie = '0:0'; updateScore()">
+        <div id="points">0:0</div>
+    </div>
 
     <img id="leftPlayerImage" src="dolgok/idleBlue.png" width="80" height="150">
     <img id="leftPlayerImageLeft" src="dolgok/blueLeftLeg.png" width="80" height="150">

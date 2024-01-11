@@ -2,6 +2,8 @@ body{
     font-family: "Comic Sans MS";
     font-weight: bold;
     background-color: burlywood;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 h1{
@@ -15,7 +17,7 @@ canvas {
     margin: 0 auto;
 }
 
-div {
+#points {
     font-weight: bold;
     font-size: 50px;
     text-shadow: 3px 3px 3px white;
@@ -23,6 +25,28 @@ div {
     margin-top: -8px;
 }
 
+.center{
+    width: 1890px;
+    margin: 0 auto;
+}
+
 img{
     display: none;
+}
+
+input[type="button"] {
+    font-family: "Comic Sans MS";
+    background-color: #af744c;
+    color: white;
+    padding: 3px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+input[type="button"]:hover {
+    background-color: #815538;
 }
