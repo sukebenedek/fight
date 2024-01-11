@@ -4,6 +4,7 @@ let width = 1890
 let height = 860
 
 let delayBetweenShots = 500 //ms
+let delayBetweenAkShots = 110 //ms
 
 //Alap adatok
 const cvsHeight = 860;
@@ -97,11 +98,14 @@ let platform1 = document.getElementById("platform1");
 let platform2 = document.getElementById("platform2");
 
 let background = document.getElementById("background");
+let akImg = document.getElementById("ak");
 
 let platformImgs = [platform0, platform1, platform2]
 
 let framesBetweenAnimations = 20;
 let frames = 0
+
+let playerWhoHasAk;
 
 
 
@@ -122,10 +126,37 @@ function move(){
     }
 
     if(akDeployed){
-        context.fillStyle = 'yellow';
-        context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
+        // context.fillStyle = 'yellow';
+        // context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
+        context.drawImage(akImg, ak.posX, ak.posY, ak.width, ak.height);
+
         if (ak.posY < 50){
             ak.posY += xSpeed / 2
+
+        }
+        if(!(ak.posX > playerRight.posX + playerRight.width || ak.posX + ak.width < playerRight.posX || ak.posY > playerRight.posY + playerRight.height || ak.posY + ak.height < playerRight.posY)){
+            //jobb
+            ak.posX = -10000
+            ak.posY = -10000
+
+            rightPlayerImage = document.getElementById("rightPlayerImageAk");
+            rightPlayerImageLeft = document.getElementById("rightPlayerImageLeftAk");
+            rightPlayerImageRight = document.getElementById("rightPlayerImageRightAk");
+
+            playerWhoHasAk = "Right"
+        }
+        else if(!(ak.posX > playerLeft.posX + playerLeft.width || ak.posX + ak.width < playerLeft.posX || ak.posY > playerLeft.posY + playerLeft.height || ak.posY + ak.height < playerLeft.posY)){
+            //bal
+            ak.posX = -10000
+            ak.posY = -10000
+
+            leftPlayerImage = document.getElementById("leftPlayerImageAk");
+            leftPlayerImageLeft = document.getElementById("leftPlayerImageLeftAk");
+            leftPlayerImageRight = document.getElementById("leftPlayerImageRightAk");
+
+            playerWhoHasAk = "Left"
+        }
+        else{
 
         }
     }
@@ -414,9 +445,16 @@ function ShootLeft(){
         leftsBullets.push(currentLeftBullet)
         canLeftShoot = false
 
-        setTimeout(function () {
-            canLeftShoot = true;
-        }, delayBetweenShots);
+        if(playerWhoHasAk == "Left"){
+            setTimeout(function () {
+                canLeftShoot = true;
+            }, delayBetweenAkShots);
+        }
+        else{
+            setTimeout(function () {
+                canLeftShoot = true;
+            }, delayBetweenShots);
+        }
     }
 }
 
@@ -426,19 +464,26 @@ function ShootRight(){
         rightsBullets.push(currentRightBullet)
         canRightShoot = false
 
-        setTimeout(function () {
-            canRightShoot = true;
-        }, delayBetweenShots);
+        if(playerWhoHasAk == "Right"){
+            setTimeout(function () {
+                canRightShoot = true;
+            }, delayBetweenAkShots);
+        }
+        else{
+            setTimeout(function () {
+                canRightShoot = true;
+            }, delayBetweenAkShots);
+        }
     }
 }
 
 //12000, 20000
-let timeOfAk = random(1000, 1000)
+let timeOfAk = random(8000, 1400)
 
-let ak = {posX: random(0, width - 200), posY: -200, width: 200, height: 100}
+let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 120}
 
 function akCall() {
-    console.log("ak");
+    // console.log("ak");
     akDeployed = true
 }
 
