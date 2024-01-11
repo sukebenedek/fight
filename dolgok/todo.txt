@@ -1,3 +1,8 @@
 meccs elejen legyen 3s a menekülésre mielőtt lőni lehet, countdown
 hp
 win count
+player collision
+double win
+RANDOM BACKGROUND
+cookies
+width

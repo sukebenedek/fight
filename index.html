@@ -8,10 +8,10 @@
     
 </head>
 <body>
-    <h1>Stickman fight</h1>
     <canvas id="cvs"></canvas>
-    <!-- <div id="points">0:0</div> -->
     <input type="button"  id="startButton" value="Restart" onclick="location.reload()">
+    <input type="button"  id="zeroButton" value="Pontnullázó" onclick="document.cookie = '0:0'; updateScore()">
+    <div id="points">0:0</div>
 
     <img id="leftPlayerImage" src="dolgok/idleBlue.png" width="80" height="150">
     <img id="leftPlayerImageLeft" src="dolgok/blueLeftLeg.png" width="80" height="150">

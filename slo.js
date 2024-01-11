@@ -1,18 +1,24 @@
 const canvas = document.getElementById('cvs');
 const context = canvas.getContext('2d');
 let width = 1890
-let height = 860
+let height = 800
 
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
+let cookie = document.cookie
 
-document.cookie
+if (cookie[0] == undefined || isNaN(cookie.split(":")[1])){
+    document.cookie = "0:0"
+}
+else{
+
+}
+
 let localScore = "0:0"
-console.log(localScore);
 
 //Alap adatok
-const cvsHeight = 860;
-const cvsWidth = 1890;
+const cvsHeight = height;
+const cvsWidth = width;
 const RefressRate = 0.001;
 
 //Karakter méret
@@ -102,6 +108,9 @@ let platform0 = document.getElementById("platform0");
 let platform1 = document.getElementById("platform1");
 let platform2 = document.getElementById("platform2");
 
+let scoreBoard = document.getElementById("points");
+
+
 let background = document.getElementById("background");
 let akImg = document.getElementById("ak");
 
@@ -112,9 +121,19 @@ let frames = 0
 
 let playerWhoHasAk;
 
+function updateScore(){
+    let cookies = document.cookie
+    let score = (Number(cookies.split(":")[0]) + Number(localScore.split(":")[0])) + ":" + (Number(cookies.split(":")[1]) + Number(localScore.split(":")[1]))
+
+    scoreBoard.innerHTML = score
+    document.cookie = score
+    localScore = "0:0"
+}
 
 
+updateScore()
 function move(){
+    
     playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight} //wsad, f
     playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight} //nyilak, ctrl
     
@@ -131,6 +150,7 @@ function move(){
     }
 
     if(akDeployed){
+
         // context.fillStyle = 'yellow';
         // context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
         context.drawImage(akImg, ak.posX, ak.posY, ak.width, ak.height);
@@ -267,6 +287,8 @@ function move(){
     for (let i = 0; i < leftsBullets.length; i++) {
         const bullet = leftsBullets[i];
         if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY)) {
+            localScore = "1:0"
+            updateScore()            
             clearInterval(moveInterval);
 
             context.fillStyle = 'black';
@@ -274,6 +296,7 @@ function move(){
             context.font = '100px Comic Sans MS, sans-serif';
             // Ezt en csinaltam
             context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+
         }
        
     }
@@ -305,6 +328,8 @@ function move(){
     for (let i = 0; i < rightsBullets.length; i++) {
         const bullet = rightsBullets[i];
         if (!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY)) {
+            localScore = "0:1"
+            updateScore()  
             clearInterval(moveInterval);
 
             context.fillStyle = 'black';
