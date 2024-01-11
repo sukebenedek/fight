@@ -6,6 +6,10 @@ let height = 860
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
 
+document.cookie
+let localScore = "0:0"
+console.log(localScore);
+
 //Alap adatok
 const cvsHeight = 860;
 const cvsWidth = 1890;
