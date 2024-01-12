@@ -137,8 +137,8 @@ function updateScore(){
 }
 
 function updateHp(){
-    let leftHpPixel =hpBar.width * (playerLeft.hp / maxHp)
-    let rightHpPixel =hpBar.width * (playerRight.hp / maxHp)
+    let leftHpPixel = hpBar.width * (playerLeft.hp / maxHp)
+    let rightHpPixel = hpBar.width * (playerRight.hp / maxHp)
 
     if(playerLeft.hp == 0){
         context.fillStyle = 'red';
@@ -177,6 +177,21 @@ function updateHp(){
         context.fillStyle = 'green';
     }
     context.fillRect(playerRight.posX - (hpBar.width - playerRight.width) / 2, playerRight.posY - 40, rightHpPixel, hpBar.height);
+
+    context.fillStyle = 'black';
+    context.textAlign = 'center';
+    context.font = 'bold 23px Comic Sans MS, sans-serif';
+    context.shadowColor = 'white';
+    context.shadowBlur = 4;
+    context.shadowOffsetX = 2;
+    context.shadowOffsetY = 2;
+
+    context.fillText(playerLeft.hp + " hp", playerLeft.posX + 35, playerLeft.posY - 20);
+    context.fillText(playerRight.hp + " hp", playerRight.posX + 35, playerRight.posY - 20);
+
+    context.shadowBlur = 0;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
     
 }
 
