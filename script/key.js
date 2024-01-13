@@ -1,6 +1,6 @@
 //Keys
-let leftLeft = 'KeyD'
-let leftRight = 'KeyA'
+let leftLeft = 'KeyA'
+let leftRight = 'KeyD'
 let leftDown = 'KeyS'
 let leftUp = 'KeyW'
 
@@ -17,16 +17,17 @@ let rightShoot = 'KeyO'
 let rightBuild = 'KeyU'
 let rightRestart = 'KeyP'
 
+
 addEventListener("keydown", function(e){
-    if (e.code == leftLeft){
+    if (e.code == leftRight){
         LspeedXRight = xSpeed;
         leftLastDir = "Right"
         leftRun = true
     } 
-    if (e.code == leftRight){
+    if (e.code == leftLeft) {
         LspeedXLeft = -xSpeed;
-        leftLastDir = "Left"  
-        leftRun = true
+        leftLastDir = "Left";
+        leftRun = true;
     }
     if (e.code == leftDown){
         LspeedY = 10;
@@ -80,11 +81,11 @@ addEventListener("keydown", function(e){
 })
 
 addEventListener("keyup", function(e){
-    if (e.code == leftLeft){
+    if (e.code == leftRight){
         LspeedXRight = 0;
         leftRun = false
     } 
-    if (e.code == leftRight){
+    if (e.code == leftLeft){
         LspeedXLeft = 0;
         leftRun = false
     }

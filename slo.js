@@ -12,8 +12,6 @@ let cookie = document.cookie
 
 let timeOfAk = random(8000, 1400)
 
-let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
-
 let xSpeed = 6
 let ySpeed = 15
 
@@ -67,9 +65,6 @@ let heightOfGround = 50
 canvas.width = width
 canvas.height = height + heightOfGround
 
-context.fillStyle = 'white';
-context.fillRect(0, 0, width, height);
-
 let leftsBullets = []
 let rightsBullets = []
 let canLeftShoot = true
@@ -90,6 +85,8 @@ let wallOnLeft = -85
 let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
 let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
 
+let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
+
 let leftPlayerImage = document.getElementById("leftPlayerImage");
 let leftPlayerImageLeft = document.getElementById("leftPlayerImageLeft");
 let leftPlayerImageRight = document.getElementById("leftPlayerImageRight");
@@ -101,6 +98,15 @@ let rightPlayerImageRight = document.getElementById("rightPlayerImageRight");
 let platform0 = document.getElementById("platform0");
 let platform1 = document.getElementById("platform1");
 let platform2 = document.getElementById("platform2");
+
+let wallImg0 = document.getElementById("wall0");
+let wallImg1 = document.getElementById("wall1");
+let wallImg2 = document.getElementById("wall2");
+let wallImg3 = document.getElementById("wall3");
+let wallImg4 = document.getElementById("wall4");
+let wallImgs = [wallImg0, wallImg1, wallImg2, wallImg3, wallImg4].reverse()
+
+let bulletImg = document.getElementById("bulletImg");
 
 let scoreBoard = document.getElementById("points");
 
@@ -521,11 +527,7 @@ function move(){
 
 
 
-
-
 }
-
-
 
 function drawPlatform(platform){
     // context.fillStyle = 'orange';
@@ -543,13 +545,25 @@ function drawPlatform(platform){
 }
 
 function drawBullet(bullet){
-    context.fillStyle = 'orange';
-    context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
+    // context.fillStyle = 'orange';
+    // context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
+    
+    if(bullet.direction == "Right")
+        context.drawImage(bulletImg, bullet.posX, bullet.posY, bullet.width, bullet.height);
+    else{
+        context.save();
+        context.scale(-1, 1);
+        context.drawImage(bulletImg, -bullet.posX, bullet.posY, bullet.width, bullet.height);
+        context.restore();
+    }
+
 }
 
 function drawWall(wall){
-    context.fillStyle = 'black';
-    context.fillRect(wall.posX, wall.posY, wall.width, wall.height);
+    // context.fillStyle = 'black';
+    // context.fillRect(wall.posX, wall.posY, wall.width, wall.height);
+    context.drawImage(wallImgs[wall.hp - 1], wall.posX, wall.posY, wall.width, wall.height);
+
 }
 
 let moveInterval = setInterval(move, 1000/60)
@@ -591,6 +605,18 @@ function Limits(){
             canLeftJump = true
         }
     }
+    // for (let index = 0; index < walls.length; index++) {
+    //     let element = walls[index]
+    //     if (LpositionY > (walls[index].posY - BaseHeight - 10) && LpositionY < (walls[index].posY - BaseHeight + 10) && LpositionX >= walls[index].posX - BaseWidth && LpositionX <= (walls[index].posX + walls[index].width)){
+    //         LpositionY = (walls[index].posY - BaseHeight)
+    //         LspeedY = 0
+    //         canLeftJump = true
+    //     }
+    //     // else if (!(playerLeft.posX > element.posX + element.width || playerLeft.posX + playerLeft.width < element.posX || playerLeft.posY > element.posY + element.height || playerLeft.posY + playerLeft.height < element.posY)){
+    //     //     LpositionY = (walls[index].posY - BaseHeight)
+    //     //     LspeedY = 0
+    //     // }
+    // }
 
     if (RpositionY >= cvsHeight - BaseHeight){
         RpositionY = (cvsHeight - BaseHeight)
@@ -701,5 +727,5 @@ function akCall() {
 setTimeout(akCall, timeOfAk);
 
 function tutorial(){
-    alert('Kék:\n   WASD: mozgás\n   F: lövés\n   Q: Fal\n   E: újrakezdés\nPiros:\n   IJKL: mozgás\n   H: lövés\n   O: Fal\n   U: újrakezdés')
+    alert('Kék(Jobb kézzel):\n   WASD: mozgás\n   E: lövés\n   Q: Fal\n   R: újrakezdés\nPiros(Jobb kézzel):\n   IJKL: mozgás\n   O: lövés\n   U: Fal\n   P: újrakezdés')
 }
