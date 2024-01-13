@@ -11,6 +11,7 @@ let cookie = document.cookie
 
 if (cookie[0] == undefined || isNaN(cookie.split(":")[1])){
     document.cookie = "0:0"
+    tutorial()
 }
 else{
 
@@ -92,10 +93,18 @@ let leftsBullets = []
 let rightsBullets = []
 let canLeftShoot = true
 let canRightShoot = true
-
 let bulletWidth = 40
 let bulletHeight = 10
 
+let canLeftWall = true
+let canRightWall = true
+let walls = []
+let wallWidth = 50
+let wallHeight = 175
+let delayBetweenWalls = 500 //ms
+let wallHp = 5
+let wallOnRight = 120
+let wallOnLeft = -85
 
 let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
 let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
@@ -186,8 +195,8 @@ function updateHp(){
     context.shadowOffsetX = 2;
     context.shadowOffsetY = 2;
 
-    context.fillText(playerLeft.hp + " hp", playerLeft.posX + 35, playerLeft.posY - 20);
-    context.fillText(playerRight.hp + " hp", playerRight.posX + 35, playerRight.posY - 20);
+    context.fillText(playerLeft.hp + " hp", playerLeft.posX + 35, playerLeft.posY - 22);
+    context.fillText(playerRight.hp + " hp", playerRight.posX + 35, playerRight.posY - 22);
 
     context.shadowBlur = 0;
     context.shadowOffsetX = 0;
@@ -332,6 +341,12 @@ function move(){
 
     updateHp()
 
+    for (let i = 0; i < walls.length; i++) {
+        const wall = walls[i];
+        drawWall(wall)
+        
+    }
+
     for (let i = 0; i < leftsBullets.length; i++) {
         const element = leftsBullets[i];
         if (element.direction === "Left") {
@@ -444,6 +459,17 @@ function move(){
     
             }
         }
+        for (let j = 0; j < walls.length; j++) {
+            const wall = walls[j];
+            if (!(element.posX > wall.posX + wall.width || element.posX + element.width < wall.posX || element.posY > wall.posY + wall.height || element.posY + element.height < wall.posY)) {
+                wall.hp -= 1
+                if(wall.hp <= 0){
+                    walls.splice(j, 1);
+                }
+                leftsBullets.splice(i, 1);
+    
+            }
+        }
     }
 
     for (let i = 0; i < rightsBullets.length; i++) {
@@ -451,6 +477,17 @@ function move(){
         for (let j = 0; j < allPlatforms.length; j++) {
             const element1 = allPlatforms[j];
             if (!(element.posX > element1.posX + element1.width || element.posX + element.width < element1.posX || element.posY > element1.posY + element1.height || element.posY + element.height < element1.posY)) {
+                rightsBullets.splice(i, 1);
+    
+            }
+        }
+        for (let j = 0; j < walls.length; j++) {
+            const wall = walls[j];
+            if (!(element.posX > wall.posX + wall.width || element.posX + element.width < wall.posX || element.posY > wall.posY + wall.height || element.posY + element.height < wall.posY)) {
+                wall.hp -= 1
+                if(wall.hp <= 0){
+                    walls.splice(j, 1);
+                }
                 rightsBullets.splice(i, 1);
     
             }
@@ -497,6 +534,11 @@ function drawPlatform(platform){
 function drawBullet(bullet){
     context.fillStyle = 'orange';
     context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
+}
+
+function drawWall(wall){
+    context.fillStyle = 'black';
+    context.fillRect(wall.posX, wall.posY, wall.width, wall.height);
 }
 
 let moveInterval = setInterval(move, 1000/60)
@@ -603,14 +645,54 @@ function ShootRight(){
     }
 }
 
-//12000, 20000
+function WallLeft(){
+    if(canLeftWall){
+        let currentLeftWall
+        if (leftLastDir == "Right"){
+            currentLeftWall = {posX: playerLeft.posX + wallOnRight, posY: playerLeft.posY + (playerLeft.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
+        }
+        else{
+            currentLeftWall = {posX: playerLeft.posX + wallOnLeft, posY: playerLeft.posY + (playerLeft.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
+        }
+
+        walls.push(currentLeftWall)
+        canLeftWall = false
+
+        setTimeout(function () {
+            canLeftWall = true;
+        }, delayBetweenWalls);
+    }
+}
+
+function WallRight(){
+    if(canRightWall){
+        let currentRightWall
+        if (rightLastDir == "Right"){
+            currentRightWall = {posX: playerRight.posX + wallOnRight, posY: playerRight.posY + (playerRight.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
+        }
+        else{
+            currentRightWall = {posX: playerRight.posX + wallOnLeft, posY: playerRight.posY + (playerRight.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
+        }
+
+        walls.push(currentRightWall)
+        canRightWall = false
+
+        setTimeout(function () {
+            canRightWall = true;
+        }, delayBetweenWalls);
+    }
+}
+
 let timeOfAk = random(8000, 1400)
 
 let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
 
 function akCall() {
-    // console.log("ak");
     akDeployed = true
 }
 
 setTimeout(akCall, timeOfAk);
+
+function tutorial(){
+    alert('Kék:\n   WASD: mozgás\n   F: lövés\n   Q: Fal\n   E: újrakezdés\nPiros:\n   IJKL: mozgás\n   H: lövés\n   O: Fal\n   U: újrakezdés')
+}

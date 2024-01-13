@@ -1,2 +1,3 @@
 meccs elejen legyen 3s a menekülésre mielőtt lőni lehet, countdown
 player collision
+bullet style
