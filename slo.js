@@ -6,6 +6,13 @@ let height = 800
 
 let maxHp = 3
 
+//Karakter méret
+const BaseWidth = 80;
+const BaseHeight = 150;
+
+let playerLeft = {posX: 150, posY: height - BaseHeight, width: BaseWidth, height: BaseHeight, hp: maxHp, speedXLeft: 0, speedXRight: 0, speedY: 0, canJump: true, canShoot: true, canWall: true}
+let playerRight = {posX: width - 150 - BaseWidth, posY: height - BaseHeight, width: BaseWidth, height: BaseHeight, hp: maxHp, speedXLeft: 0, speedXRight: 0, speedY: 0, canJump: true, canShoot: true, canWall: true}
+
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
 let cookie = document.cookie
@@ -14,9 +21,6 @@ let timeOfAk = random(8000, 1400)
 
 let xSpeed = 6
 let ySpeed = 15
-
-let canLeftJump = true
-let canRightJump = true
 
 let leftRun = false
 let rightRun = false
@@ -30,25 +34,7 @@ const cvsHeight = height;
 const cvsWidth = width;
 const RefressRate = 0.001;
 
-//Karakter méret
-const BaseWidth = 80;
-const BaseHeight = 150;
-
 let Ground = false
-
-//Mozgáshoz Right
-let RpositionX = width - 150 - BaseWidth;
-let RpositionY = height - BaseHeight;
-let RspeedXLeft = 0;
-let RspeedXRight = 0;
-let RspeedY = 0;
-
-//Mozgáshoz Left
-let LpositionX = 150;
-let LpositionY = height - BaseHeight;
-let LspeedXLeft = 0;
-let LspeedXRight = 0;
-let LspeedY = 0;
 
 let allPlatforms = []
 let numOfPlatforms = 9
@@ -67,13 +53,9 @@ canvas.height = height + heightOfGround
 
 let leftsBullets = []
 let rightsBullets = []
-let canLeftShoot = true
-let canRightShoot = true
 let bulletWidth = 40
 let bulletHeight = 10
 
-let canLeftWall = true
-let canRightWall = true
 let walls = []
 let wallWidth = 50
 let wallHeight = 175
@@ -81,9 +63,7 @@ let delayBetweenWalls = 500 //ms
 let wallHp = 5
 let wallOnRight = 120
 let wallOnLeft = -85
-
-let playerLeft = {posX: LpositionX, posY: LpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
-let playerRight = {posX: RpositionX, posY: RpositionY, width: BaseWidth, height: BaseHeight, hp: maxHp}
+let wallBreakTime = 1750
 
 let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
 
@@ -224,15 +204,15 @@ function updateHp(){
 
 updateScore()
 function move(){
-    playerLeft.posX = LpositionX
-    playerLeft.posY = LpositionY
-    playerLeft.width = BaseWidth
-    playerLeft.height = BaseHeight
+    // playerLeft.posX = playerLeft.posX
+    // playerLeft.posY = playerLeft.posY
+    // playerLeft.width = BaseWidth
+    // playerLeft.height = BaseHeight
 
-    playerRight.posX = RpositionX
-    playerRight.posY = RpositionY
-    playerRight.width = BaseWidth
-    playerRight.height = BaseHeight
+    // playerRight.posX = playerRight.posX
+    // playerRight.posY = playerRight.posY
+    // playerRight.width = BaseWidth
+    // playerRight.height = BaseHeight
 
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
@@ -361,6 +341,13 @@ function move(){
     for (let i = 0; i < walls.length; i++) {
         const wall = walls[i];
         drawWall(wall)
+
+        if (checkCollision(playerLeft, wall)) {
+            handleCollisionWall(playerLeft, wall);
+        }
+        if (checkCollision(playerRight, wall)) {
+            handleCollisionWall(playerRight, wall);
+        }
         
     }
 
@@ -514,20 +501,105 @@ function move(){
     // if (!(playerLeft.posX > playerRight.posX + playerRight.width || playerLeft.posX + playerLeft.width < playerRight.posX || playerLeft.posY > playerRight.posY + playerRight.height || playerLeft.posY + playerLeft.height < playerRight.posY)) {
     //collision detection
 
-    LpositionX += LspeedXLeft;
-    LpositionX += LspeedXRight;
-    LpositionY += LspeedY;
+    playerLeft.posX += playerLeft.speedXLeft;
+    playerLeft.posX += playerLeft.speedXRight;
+    playerLeft.posY += playerLeft.speedY;
 
-    RpositionX += RspeedXLeft;
-    RpositionX += RspeedXRight;
-    RpositionY += RspeedY;
+    playerRight.posX += playerRight.speedXLeft;
+    playerRight.posX += playerRight.speedXRight;
+    playerRight.posY += playerRight.speedY;
 
     Limits()
+
+    if (checkCollision(playerRight, playerLeft)) {
+        handleCollisionPlayer(playerRight, playerLeft);
+    }
+    
 
 
 
 
 }
+
+function checkCollision(square1, square2) 
+{
+    return (
+        square1.posX < square2.posX + square2.width &&
+        square1.posX + square1.width > square2.posX &&
+        square1.posY < square2.posY + square2.height &&
+        square1.posY + square1.height > square2.posY
+    );
+}
+
+function handleCollisionPlayer(player1, player2) {
+    const overlapX = Math.max(0, Math.min(player1.posX + player1.width, player2.posX + player2.width) - Math.max(player1.posX, player2.posX));
+    const overlapY = Math.max(0, Math.min(player1.posY + player1.height, player2.posY + player2.height) - Math.max(player1.posY, player2.posY));
+
+    if (overlapX < overlapY) {
+        if (player1.posX < player2.posX) {
+            player1.posX -= overlapX / 2;
+            player2.posX += overlapX / 2;
+        } else {
+            player1.posX += overlapX / 2;
+            player2.posX -= overlapX / 2;
+        }
+    } else {
+        if (player1.posY < player2.posY) {
+            player1.posY -= overlapY / 2;
+            player2.posY += overlapY / 2;
+            player1.posY = (player2.posY - BaseHeight)
+            playerRight.speedY = 0
+            playerRight.canJump = true
+        } else {
+            player1.posY += overlapY / 2;
+            player2.posY -= overlapY / 2;
+            player2.posY = (player1.posY - BaseHeight)
+            playerLeft.speedY = 0
+            playerLeft.canJump = true
+            
+        }
+    }
+}
+
+function handleCollisionWall(square1, square2)//player, wall
+{
+    const overlapX = Math.max(0, Math.min(square1.posX + square1.width, square2.posX + square2.width) - Math.max(square1.posX, square2.posX));
+    const overlapY = Math.max(0, Math.min(square1.posY + square1.height, square2.posY + square2.height) - Math.max(square1.posY, square2.posY));
+
+    if (overlapX < overlapY) 
+    {
+        if (square1.posX < square2.posX) 
+        {
+            square1.posX += -overlapX;
+        } 
+        else 
+        {
+            square1.posX += overlapX;
+        }
+    }
+    else 
+    {
+        if (square1.posY < square2.posY) 
+        {
+            square1.posY = (square2.posY - BaseHeight)
+            square1.speedY = 0
+            if(square1 == playerLeft){
+                playerLeft.canJump = true
+            }
+            else{
+                playerRight.canJump = true
+            }
+        } 
+        else 
+        {
+            square1.posY = square2.posY + square2.height;
+            square1.speedY = 0
+        }
+    }
+}
+
+
+
 
 function drawPlatform(platform){
     // context.fillStyle = 'orange';
@@ -573,71 +645,76 @@ function random(min, max) {
 }
 setInterval (function GravityL(){
     if (Ground == false){
-        LspeedY += 0.09;
+        playerLeft.speedY += 0.09;
     }
 })
 setInterval (function GravityR(){
     if (Ground == false){
-        RspeedY += 0.09;
+        playerRight.speedY += 0.09;
     }
 })
 
 function Limits(){
-    if (LpositionY >= cvsHeight - BaseHeight){
-        LpositionY = (cvsHeight - BaseHeight)
-        canLeftJump = true
+    if (playerLeft.posY >= cvsHeight - BaseHeight){
+        playerLeft.posY = (cvsHeight - BaseHeight)
+        playerLeft.canJump = true
 
     }
-    if (LpositionY <= 0){
-        LpositionY = 0
-        LspeedY = 0
+    if (playerLeft.posY <= 0){
+        playerLeft.posY = 0
+        playerLeft.speedY = 0
     }
-    if (LpositionX <= 0){
-        LpositionX = 0
+    if (playerLeft.posX <= 0){
+        playerLeft.posX = 0
     }
-    if (LpositionX >= cvsWidth - BaseWidth){
-        LpositionX = (cvsWidth - BaseWidth)
+    if (playerLeft.posX >= cvsWidth - BaseWidth){
+        playerLeft.posX = (cvsWidth - BaseWidth)
     }
     for (let index = 0; index < allPlatforms.length; index++) {
-        if (LpositionY > (allPlatforms[index].posY - BaseHeight - 10) && LpositionY < (allPlatforms[index].posY - BaseHeight + 10) && LpositionX >= allPlatforms[index].posX - BaseWidth && LpositionX <= (allPlatforms[index].posX + allPlatforms[index].width)){
-            LpositionY = (allPlatforms[index].posY - BaseHeight)
-            LspeedY = 0
-            canLeftJump = true
+        if (playerLeft.posY > (allPlatforms[index].posY - BaseHeight - 10) && playerLeft.posY < (allPlatforms[index].posY - BaseHeight + 10) && playerLeft.posX >= allPlatforms[index].posX - BaseWidth && playerLeft.posX <= (allPlatforms[index].posX + allPlatforms[index].width)){
+            playerLeft.posY = (allPlatforms[index].posY - BaseHeight)
+            playerLeft.speedY = 0
+            playerLeft.canJump = true
         }
     }
+    // if (playerLeft.posY > (playerRight.posY - BaseHeight - 10) && playerLeft.posY < (playerRight.posY - BaseHeight + 10) && playerLeft.posX >= playerRight.posX - BaseWidth && playerLeft.posX <= (playerRight.posX + playerRight.width)){
+    //     playerLeft.posY = 0
+    //     playerLeft.speed = 0
+    //     playerLeft.canJump = true
+    // }
     // for (let index = 0; index < walls.length; index++) {
     //     let element = walls[index]
-    //     if (LpositionY > (walls[index].posY - BaseHeight - 10) && LpositionY < (walls[index].posY - BaseHeight + 10) && LpositionX >= walls[index].posX - BaseWidth && LpositionX <= (walls[index].posX + walls[index].width)){
-    //         LpositionY = (walls[index].posY - BaseHeight)
-    //         LspeedY = 0
-    //         canLeftJump = true
+    //     if (playerLeft.posY > (walls[index].posY - BaseHeight - 10) && playerLeft.posY < (walls[index].posY - BaseHeight + 10) && playerLeft.posX >= walls[index].posX - BaseWidth && playerLeft.posX <= (walls[index].posX + walls[index].width)){
+    //         playerLeft.posY = (walls[index].posY - BaseHeight)
+    //         playerLeft.speed = 0
+    //         playerLeft.canJump = true
     //     }
     //     // else if (!(playerLeft.posX > element.posX + element.width || playerLeft.posX + playerLeft.width < element.posX || playerLeft.posY > element.posY + element.height || playerLeft.posY + playerLeft.height < element.posY)){
-    //     //     LpositionY = (walls[index].posY - BaseHeight)
-    //     //     LspeedY = 0
+    //     //     playerLeft.posY = (walls[index].posY - BaseHeight)
+    //     //     playerLeft.speed = 0
     //     // }
     // }
 
-    if (RpositionY >= cvsHeight - BaseHeight){
-        RpositionY = (cvsHeight - BaseHeight)
-        canRightJump = true
+    if (playerRight.posY >= cvsHeight - BaseHeight){
+        playerRight.posY = (cvsHeight - BaseHeight)
+        playerRight.canJump = true
 
     }
-    if (RpositionY <= 0){
-        RpositionY = 0
-        RspeedY = 0
+    if (playerRight.posY <= 0){
+        playerRight.posY = 0
+        playerRight.speedY = 0
     }
-    if (RpositionX <= 0){
-        RpositionX = 0
+    if (playerRight.posX <= 0){
+        playerRight.posX = 0
     }
-    if (RpositionX >= cvsWidth - BaseWidth){
-        RpositionX = (cvsWidth - BaseWidth)
+    if (playerRight.posX >= cvsWidth - BaseWidth){
+        playerRight.posX = (cvsWidth - BaseWidth)
     }
     for (let index = 0; index < allPlatforms.length; index++) {
-        if (RpositionY > (allPlatforms[index].posY - BaseHeight - 10) && RpositionY < (allPlatforms[index].posY - BaseHeight + 10) && RpositionX >= allPlatforms[index].posX - BaseWidth && RpositionX <= (allPlatforms[index].posX + allPlatforms[index].width)){
-            RpositionY = (allPlatforms[index].posY - BaseHeight)
-            RspeedY = 0
-            canRightJump = true
+        if (playerRight.posY > (allPlatforms[index].posY - BaseHeight - 10) && playerRight.posY < (allPlatforms[index].posY - BaseHeight + 10) && playerRight.posX >= allPlatforms[index].posX - BaseWidth && playerRight.posX <= (allPlatforms[index].posX + allPlatforms[index].width)){
+            playerRight.posY = (allPlatforms[index].posY - BaseHeight)
+            playerRight.speedY = 0
+            playerRight.canJump = true
         }
     }
 }
@@ -645,45 +722,45 @@ function Limits(){
 let gunPos = 77
 
 function ShootLeft(){
-    if(canLeftShoot){
+    if(playerLeft.canShoot){
         let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: leftLastDir}
         leftsBullets.push(currentLeftBullet)
-        canLeftShoot = false
+        playerLeft.canShoot = false
 
         if(playerWhoHasAk == "Left"){
             setTimeout(function () {
-                canLeftShoot = true;
+                playerLeft.canShoot = true;
             }, delayBetweenAkShots);
         }
         else{
             setTimeout(function () {
-                canLeftShoot = true;
+                playerLeft.canShoot = true;
             }, delayBetweenShots);
         }
     }
 }
 
 function ShootRight(){
-    if(canRightShoot){
+    if(playerRight.canShoot){
         let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: rightLastDir}
         rightsBullets.push(currentRightBullet)
-        canRightShoot = false
+        playerRight.canShoot = false
 
         if(playerWhoHasAk == "Right"){
             setTimeout(function () {
-                canRightShoot = true;
+                playerRight.canShoot = true;
             }, delayBetweenAkShots);
         }
         else{
             setTimeout(function () {
-                canRightShoot = true;
+                playerRight.canShoot = true;
             }, delayBetweenShots);
         }
     }
 }
 
 function WallLeft(){
-    if(canLeftWall){
+    if(playerLeft.canWall){
         let currentLeftWall
         if (leftLastDir == "Right"){
             currentLeftWall = {posX: playerLeft.posX + wallOnRight, posY: playerLeft.posY + (playerLeft.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
@@ -693,16 +770,16 @@ function WallLeft(){
         }
 
         walls.push(currentLeftWall)
-        canLeftWall = false
+        playerLeft.canWall = false
 
         setTimeout(function () {
-            canLeftWall = true;
+            playerLeft.canWall = true;
         }, delayBetweenWalls);
     }
 }
 
 function WallRight(){
-    if(canRightWall){
+    if(playerRight.canWall){
         let currentRightWall
         if (rightLastDir == "Right"){
             currentRightWall = {posX: playerRight.posX + wallOnRight, posY: playerRight.posY + (playerRight.height - wallHeight), width: wallWidth, height: wallHeight, hp: wallHp}
@@ -712,10 +789,10 @@ function WallRight(){
         }
 
         walls.push(currentRightWall)
-        canRightWall = false
+        playerRight.canWall = false
 
         setTimeout(function () {
-            canRightWall = true;
+            playerRight.canWall = true;
         }, delayBetweenWalls);
     }
 }
@@ -724,8 +801,22 @@ function akCall() {
     akDeployed = true
 }
 
-setTimeout(akCall, timeOfAk);
+function wallBreak() {
+    for (let i = 0; i < walls.length; i++) {
+        const wall = walls[i];
+        wall.hp -= 1
+        if(wall.hp <= 0){
+            walls.splice(i, 1);
+        }
+        
+    }
+}
+
+let wallInterval = setInterval(wallBreak, wallBreakTime)
+
 
 function tutorial(){
     alert('Kék(Jobb kézzel):\n   WASD: mozgás\n   E: lövés\n   Q: Fal\n   R: újrakezdés\nPiros(Jobb kézzel):\n   IJKL: mozgás\n   O: lövés\n   U: Fal\n   P: újrakezdés')
 }
+
+setTimeout(akCall, timeOfAk);

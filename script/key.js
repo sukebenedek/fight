@@ -20,42 +20,44 @@ let rightRestart = 'KeyP'
 
 addEventListener("keydown", function(e){
     if (e.code == leftRight){
-        LspeedXRight = xSpeed;
+        playerLeft.speedXRight = xSpeed;
         leftLastDir = "Right"
         leftRun = true
     } 
     if (e.code == leftLeft) {
-        LspeedXLeft = -xSpeed;
+        playerLeft.speedXLeft = -xSpeed;
         leftLastDir = "Left";
         leftRun = true;
     }
     if (e.code == leftDown){
-        LspeedY = 10;
+        playerLeft.speedY = 10;
     } 
     if (e.code == leftUp){
-        if(canLeftJump){
-            LspeedY = -ySpeed; Ground = false;
-            canLeftJump = false
+        if(playerLeft.canJump){
+            playerLeft.speedY = -ySpeed;
+            Ground = false;
+            playerLeft.canJump = false
         }
     }
 
     if (e.code == rightRight){
-        RspeedXRight = xSpeed;
+        playerRight.speedXRight = xSpeed;
         rightLastDir = "Right"
         rightRun = true
     } 
     if (e.code == rightLeft){
-       RspeedXLeft = -xSpeed; 
+       playerRight.speedXLeft = -xSpeed; 
        rightLastDir = "Left"
        rightRun = true
     } 
     if (e.code == rightDown){
-        RspeedY = 10;
+        playerRight.speedY = 10;
     }
     if (e.code == rightUp){
-        if(canRightJump){
-            RspeedY = -ySpeed; Ground = false;
-            canRightJump = false
+        if(playerRight.canJump){
+            playerRight.speedY = -ySpeed;
+            Ground = false;
+            playerRight.canJump = false
         }
     }
 
@@ -82,24 +84,24 @@ addEventListener("keydown", function(e){
 
 addEventListener("keyup", function(e){
     if (e.code == leftRight){
-        LspeedXRight = 0;
+        playerLeft.speedXRight = 0;
         leftRun = false
     } 
     if (e.code == leftLeft){
-        LspeedXLeft = 0;
+        playerLeft.speedXLeft = 0;
         leftRun = false
     }
-    if (e.code == leftDown) LspeedY = 0;
-    // if (e.code == 'KeyW') LspeedY = 0;
+    if (e.code == leftDown) playerLeft.speedY = 0;
+    // if (e.code == 'KeyW') playerLeft.speedY = 0;
 
     if (e.code == rightRight){
-        RspeedXRight = 0;
+        playerRight.speedXRight = 0;
         rightRun = false
     }
     if (e.code == rightLeft){
-        RspeedXLeft = 0;
+        playerRight.speedXLeft = 0;
         rightRun = false
     }
-    if (e.code == rightDown) RspeedY = 0;
-    // if (e.code == 'KeyI') RspeedY = 0;
+    if (e.code == rightDown) playerRight.speedY = 0;
+    // if (e.code == 'KeyI') playerRight.speedY = 0;
 })

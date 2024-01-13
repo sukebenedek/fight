@@ -1,3 +1,2 @@
 meccs elejen legyen 3s a menekülésre mielőtt lőni lehet, countdown
-player collision
-bullet style
+nem mindig ugrik a fal tetejerol meg neha rezeg
