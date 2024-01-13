@@ -1,5 +1,6 @@
 const canvas = document.getElementById('cvs');
 const context = canvas.getContext('2d');
+
 let width = 1890
 let height = 800
 
@@ -9,13 +10,18 @@ let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
 let cookie = document.cookie
 
-if (cookie[0] == undefined || isNaN(cookie.split(":")[1])){
-    document.cookie = "0:0"
-    tutorial()
-}
-else{
+let timeOfAk = random(8000, 1400)
 
-}
+let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
+
+let xSpeed = 6
+let ySpeed = 15
+
+let canLeftJump = true
+let canRightJump = true
+
+let leftRun = false
+let rightRun = false
 
 let localScore = "0:0"
 
@@ -64,31 +70,6 @@ canvas.height = height + heightOfGround
 context.fillStyle = 'white';
 context.fillRect(0, 0, width, height);
 
-function generatePlatform() {
-    return {posX: random(0, width - 150), posY: random(160, height - 200), width: random(150, 220), height: random(50, 70), type: random(0, 3), isFlipped: Math.random() >= 0.5};
-}
-
-function checkProximity(platform, existingPlatforms, minDistance) {
-    for (let i = 0; i < existingPlatforms.length; i++) {
-        let distanceX = Math.abs(platform.posX - existingPlatforms[i].posX);
-        let distanceY = Math.abs(platform.posY - existingPlatforms[i].posY);
-        
-        if (distanceX < minDistance && distanceY < minDistance) {
-            return true; // tul kozel van
-        }
-    }
-    return false;
-}
-
-for (let i = 0; i < numOfPlatforms; i++) {
-    let newPlatform;
-    do {
-        newPlatform = generatePlatform();
-    } while (checkProximity(newPlatform, allPlatforms, 240));
-    
-    allPlatforms.push(newPlatform);
-}
-
 let leftsBullets = []
 let rightsBullets = []
 let canLeftShoot = true
@@ -136,10 +117,40 @@ let playerWhoHasAk;
 
 let hpBar = {width: 110, height: 20}
 
+if (cookie[0] == undefined || isNaN(cookie.split(":")[1])){
+    document.cookie = "0:0"
+    tutorial()
+}
+
+function generatePlatform() {
+    return {posX: random(0, width - 150), posY: random(160, height - 200), width: random(150, 220), height: random(50, 70), type: random(0, 3), isFlipped: Math.random() >= 0.5};
+}
+
+function checkProximity(platform, existingPlatforms, minDistance) {
+    for (let i = 0; i < existingPlatforms.length; i++) {
+        let distanceX = Math.abs(platform.posX - existingPlatforms[i].posX);
+        let distanceY = Math.abs(platform.posY - existingPlatforms[i].posY);
+        
+        if (distanceX < minDistance && distanceY < minDistance) {
+            return true; // tul kozel van
+        }
+    }
+    return false;
+}
+
+for (let i = 0; i < numOfPlatforms; i++) {
+    let newPlatform;
+    do {
+        newPlatform = generatePlatform();
+    } while (checkProximity(newPlatform, allPlatforms, 240));
+    
+    allPlatforms.push(newPlatform);
+}
+
 function updateScore(){
     let cookies = document.cookie
     let score = (Number(cookies.split(":")[0]) + Number(localScore.split(":")[0])) + ":" + (Number(cookies.split(":")[1]) + Number(localScore.split(":")[1]))
-
+    
     scoreBoard.innerHTML = score
     document.cookie = score
     localScore = "0:0"
@@ -682,10 +693,6 @@ function WallRight(){
         }, delayBetweenWalls);
     }
 }
-
-let timeOfAk = random(8000, 1400)
-
-let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
 
 function akCall() {
     akDeployed = true

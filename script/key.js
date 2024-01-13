@@ -1,104 +1,104 @@
-let xSpeed = 6
-let ySpeed = 15
+//Keys
+let leftLeft = 'KeyD'
+let leftRight = 'KeyA'
+let leftDown = 'KeyS'
+let leftUp = 'KeyW'
 
-let canLeftJump = true
-let canRightJump = true
+let rightLeft = 'KeyJ'
+let rightRight = 'KeyL'
+let rightDown = 'KeyK'
+let rightUp = 'KeyI'
 
-let leftRun = false
-let rightRun = false
+let leftShoot = 'KeyE'
+let leftBuild = 'KeyQ'
+let leftRestart = 'KeyR'
+
+let rightShoot = 'KeyO'
+let rightBuild = 'KeyU'
+let rightRestart = 'KeyP'
 
 addEventListener("keydown", function(e){
-    if (e.code == 'KeyD'){
+    if (e.code == leftLeft){
         LspeedXRight = xSpeed;
         leftLastDir = "Right"
         leftRun = true
     } 
-    if (e.code == 'KeyA'){
+    if (e.code == leftRight){
         LspeedXLeft = -xSpeed;
         leftLastDir = "Left"  
         leftRun = true
     }
-    if (e.code == 'KeyS'){
+    if (e.code == leftDown){
         LspeedY = 10;
     } 
-    if (e.code == 'KeyW'){
+    if (e.code == leftUp){
         if(canLeftJump){
             LspeedY = -ySpeed; Ground = false;
             canLeftJump = false
-            
         }
     }
-})
 
-addEventListener("keyup", function(e){
-    if (e.code == 'KeyD'){
-        LspeedXRight = 0;
-        leftRun = false
-    } 
-    if (e.code == 'KeyA'){
-        LspeedXLeft = 0;
-        leftRun = false
-    }
-    if (e.code == 'KeyS') LspeedY = 0;
-    // if (e.code == 'KeyW') LspeedY = 0;
-})
-
-addEventListener("keydown", function(e){
-    if (e.code == 'KeyL'){
+    if (e.code == rightRight){
         RspeedXRight = xSpeed;
         rightLastDir = "Right"
         rightRun = true
     } 
-    if (e.code == 'KeyJ'){
+    if (e.code == rightLeft){
        RspeedXLeft = -xSpeed; 
        rightLastDir = "Left"
        rightRun = true
     } 
-    if (e.code == 'KeyK'){
+    if (e.code == rightDown){
         RspeedY = 10;
     }
-    if (e.code == 'KeyI'){
+    if (e.code == rightUp){
         if(canRightJump){
             RspeedY = -ySpeed; Ground = false;
             canRightJump = false
-            
         }
+    }
+
+    if (e.code == leftShoot){
+        ShootLeft()
+    }
+    if(e.code == leftBuild){
+        WallLeft()
+    }
+    if (end && e.code === leftRestart){
+        location.reload()
+    }
+
+    if (e.code === rightShoot) {
+        ShootRight()
+    }
+    if(e.code == rightBuild){
+        WallRight()
+    }
+    if (end && e.code === rightRestart){
+        location.reload()
     }
 })
 
 addEventListener("keyup", function(e){
-    if (e.code == 'KeyL'){
+    if (e.code == leftLeft){
+        LspeedXRight = 0;
+        leftRun = false
+    } 
+    if (e.code == leftRight){
+        LspeedXLeft = 0;
+        leftRun = false
+    }
+    if (e.code == leftDown) LspeedY = 0;
+    // if (e.code == 'KeyW') LspeedY = 0;
+
+    if (e.code == rightRight){
         RspeedXRight = 0;
         rightRun = false
     }
-    if (e.code == 'KeyJ'){
+    if (e.code == rightLeft){
         RspeedXLeft = 0;
         rightRun = false
     }
-    if (e.code == 'KeyK') RspeedY = 0;
+    if (e.code == rightDown) RspeedY = 0;
     // if (e.code == 'KeyI') RspeedY = 0;
 })
-
-addEventListener("keydown", function(e){
-    if (e.code == 'KeyF'){
-        ShootLeft()
-    }
-    else if(e.code == 'KeyQ'){
-        WallLeft()
-    }
-    if (end && e.code === 'KeyE'){
-        location.reload()
-    }
-})
-
-addEventListener("keydown", function(e) {
-    if (e.code === 'KeyH') {
-        ShootRight()
-    }
-    else if(e.code == 'KeyO'){
-        WallRight()
-    }
-    if (end && e.code === 'KeyU'){
-        location.reload()
-    }
-});
