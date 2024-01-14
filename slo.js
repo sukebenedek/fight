@@ -15,11 +15,11 @@ let playerRight = {posX: width - 150 - BaseWidth, posY: height - BaseHeight, wid
 
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
-let delayBetweenRpgShots = 600 //ms
+let delayBetweenRpgShots = 500 //ms
 let cookie = document.cookie
 
-let timeOfWeapon = random(1000, 1002)//8000, 1400
-let timeOfSecondWeapon = random(1000, 1002)//2000, 5000
+let timeOfWeapon = random(8000, 14000)//8000, 14000
+let timeOfSecondWeapon = random(4000, 7000)//2000, 5000
 
 let xSpeed = 6
 let ySpeed = 15
@@ -71,7 +71,7 @@ let wallOnLeft = -85
 let wallBreakTime = 1750
 
 let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
-let rpg = {posX: -300, posY: random(200, height - 100), width: 250, height: 100, direction: "Right"}
+let rpg = {posX: -300, posY: random(200, height - 100 - 200), width: 250, height: 100, direction: "Right"}
 if (random(1, 3) == 2){
     rpg.posX = width + 300
     rpg.direction = "Left"
@@ -156,6 +156,13 @@ function updateScore(){
 }
 
 function updateHp(){
+    if(playerRight.hp < 0){
+        playerRight.hp = 0
+    }
+    if(playerLeft.hp < 0){
+        playerLeft.hp = 0
+    }
+
     let leftHpPixel = hpBar.width * (playerLeft.hp / maxHp)
     let rightHpPixel = hpBar.width * (playerRight.hp / maxHp)
 
@@ -214,6 +221,151 @@ function updateHp(){
     
 }
 
+function distanceBetweenCenters(rect1, rect2) {
+    const center1X = rect1.posX + rect1.width / 2;
+    const center1Y = rect1.posY + rect1.height / 2;
+
+    const center2X = rect2.posX + rect2.width / 2;
+    const center2Y = rect2.posY + rect2.height / 2;
+
+    const distanceX = Math.abs(center1X - center2X);
+    const distanceY = Math.abs(center1Y - center2Y);
+
+    return Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+}
+
+let explosionDistance = 225
+
+function explosionWallDemage(rocket){
+    for (let i = 0; i < walls.length; i++) {
+        const wall = walls[i];
+
+        if(distanceBetweenCenters(rocket, wall) < explosionDistance){
+            wall.hp -= 1
+        }
+
+        
+    }
+    
+}
+
+function explosion(rocket) {
+    if(rocket.isRocket){
+        // console.log("bumm");
+        explosionWallDemage(rocket)
+        
+        if(checkCollision(rocket, playerRight) && rocket.owner != "Right"){
+            playerRight.hp -= 3
+            // if(distanceBetweenCenters(rocket, playerLeft) < explosionDistance){
+            //     playerLeft.hp -= 1
+            // }
+            checkEnd()
+            return;
+
+        }
+        if(checkCollision(rocket, playerLeft) && rocket.owner != "Left"){
+            playerLeft.hp -= 3
+            // if(distanceBetweenCenters(rocket, playerRight) < explosionDistance){
+            //     playerRight.hp -= 1
+            // }
+            checkEnd()
+            return;
+
+        }
+
+        for (let i = 0; i < allPlatforms.length; i++) {
+            const platform = allPlatforms[i];
+
+            if(checkCollision(platform, rocket)){
+                // console.log("sziget");
+                if(distanceBetweenCenters(rocket, playerLeft) < explosionDistance && rocket.owner != "Left"){
+                    playerLeft.hp -= 1
+                }
+                if(distanceBetweenCenters(rocket, playerRight) < explosionDistance && rocket.owner != "Right"){
+                    playerRight.hp -= 1
+                }
+
+                // console.log(distanceBetweenCenters(rocket, playerLeft));
+                // console.log(distanceBetweenCenters(rocket, playerRight));
+                checkEnd()
+                return;
+            }
+            
+        }
+
+        for (let i = 0; i < walls.length; i++) {
+            const wall = walls[i];
+
+            if(checkCollision(wall, rocket)){
+                // console.log("fal");
+                if(distanceBetweenCenters(rocket, playerLeft) < explosionDistance && rocket.owner != "Left"){
+                    playerLeft.hp -= 1
+                }
+                if(distanceBetweenCenters(rocket, playerRight) < explosionDistance && rocket.owner != "Right"){
+                    playerRight.hp -= 1
+                }
+
+                // console.log(distanceBetweenCenters(rocket, playerLeft));
+                // console.log(distanceBetweenCenters(rocket, playerRight));
+                checkEnd()
+                return;
+            }
+            
+        }
+
+
+
+
+        
+
+
+
+
+    }   
+}
+
+function checkEnd(){
+    updateHp()
+    if(playerRight.hp <= 0){
+        localScore = "1:0"
+        updateScore()
+        end = true
+        clearInterval(moveInterval);
+
+        context.fillStyle = 'black';
+        context.textAlign = 'center';
+        context.font = '100px Comic Sans MS, sans-serif';
+        context.shadowColor = 'white';
+        context.shadowBlur = 4;
+        context.shadowOffsetX = 2;
+        context.shadowOffsetY = 2;
+
+        // Ezt en csinaltam //Pali
+        context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+    }
+    if(playerLeft.hp <= 0){
+        localScore = "0:1"
+        updateScore()
+        end = true
+        clearInterval(moveInterval);
+
+        context.fillStyle = 'black';
+        context.textAlign = 'center';
+        context.font = '100px Comic Sans MS, sans-serif';
+
+        context.shadowColor = 'white';
+        context.shadowBlur = 4;
+        context.shadowOffsetX = 2;
+        context.shadowOffsetY = 2;
+
+        // Ezt en csinaltam //Ezt is a Pali
+        context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
+    }
+
+    context.shadowBlur = 0;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+}
 
 updateScore()
 function move(){
@@ -347,55 +499,56 @@ function move(){
             playerWhoHasAk = "Left"
         }
 
-        if(secondDeployed){
-            // context.fillStyle = 'yellow';
-            // context.fillRect(rpg.posX, rpg.posY, rpg.width, rpg.height);
-            if((playerWhoHasRpg == "Left" && leftLastDir == "Right") || (playerWhoHasRpg == "Right" && rightLastDir == "Right")){
-                context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
-            }
-            else if(playerWhoHasRpg  != "None"){
-                context.save();
-                context.scale(-1, 1);
-                context.drawImage(rpgImg, -rpg.posX - rpg.width, rpg.posY, rpg.width, rpg.height)
-                context.restore();
-            }
-            else{
-                context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
-            }
+    }
+    
+    if(secondDeployed){
+        // context.fillStyle = 'yellow';
+        // context.fillRect(rpg.posX, rpg.posY, rpg.width, rpg.height);
+        if((playerWhoHasRpg == "Left" && leftLastDir == "Right") || (playerWhoHasRpg == "Right" && rightLastDir == "Right")){
+            context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
+        }
+        else if(playerWhoHasRpg  != "None"){
+            context.save();
+            context.scale(-1, 1);
+            context.drawImage(rpgImg, -rpg.posX - rpg.width, rpg.posY, rpg.width, rpg.height)
+            context.restore();
+        }
+        else{
+            context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
+        }
 
-            if(rpg.direction == "Right"){
-                if (rpg.posX < 50){
-                    rpg.posX += xSpeed / 2
-                }
+        if(rpg.direction == "Right"){
+            if (rpg.posX < 50){
+                rpg.posX += xSpeed / 2
             }
-            else{
-                if (rpg.posX > width - rpg.width - 50){
-                    rpg.posX -= xSpeed / 2
-                }
+        }
+        else{
+            if (rpg.posX > width - rpg.width - 50){
+                rpg.posX -= xSpeed / 2
             }
+        }
 
-            if(checkCollision(playerLeft, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Left"){
-                playerWhoHasRpg = "Left"
-                
-            }
-            if(checkCollision(playerRight, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Right"){
-                playerWhoHasRpg = "Right"
-                
-            }
+        if(checkCollision(playerLeft, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Left"){
+            playerWhoHasRpg = "Left"
+            
+        }
+        if(checkCollision(playerRight, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Right"){
+            playerWhoHasRpg = "Right"
+            
+        }
 
-            if(playerWhoHasRpg == "Left"){
-                rpg.posX = playerLeft.posX - 10
-                rpg.posY = playerLeft.posY + 65
-                rpg.width = 100
-                rpg.height = 50
-            }
+        if(playerWhoHasRpg == "Left"){
+            rpg.posX = playerLeft.posX - 10
+            rpg.posY = playerLeft.posY + 65
+            rpg.width = 100
+            rpg.height = 50
+        }
 
-            if(playerWhoHasRpg == "Right"){
-                rpg.posX = playerRight.posX - 10
-                rpg.posY = playerRight.posY + 65
-                rpg.width = 100
-                rpg.height = 50
-            }
+        if(playerWhoHasRpg == "Right"){
+            rpg.posX = playerRight.posX - 10
+            rpg.posY = playerRight.posY + 65
+            rpg.width = 100
+            rpg.height = 50
         }
     }
 
@@ -416,49 +569,31 @@ function move(){
         const element = leftsBullets[i];
         if (element.direction === "Left") {
             element.posX -= bulletSpeed;
-            drawBullet(element);
             if (element.posX < 0 - bulletHeight) {
-
                 leftsBullets.splice(i, 1)
             }
         }
-    }
-    
-    for (let i = 0; i < leftsBullets.length; i++) {
-        const element = leftsBullets[i];
-        if (element.direction === "Right") {
+        else if (element.direction === "Right") {
             element.posX += bulletSpeed;
-            drawBullet(element);
             if (element.posX > width) {
                 leftsBullets.splice(i, 1);
-
             }
         }
+        drawBullet(element);
     }
     
     for (let i = 0; i < leftsBullets.length; i++) {
         const bullet = leftsBullets[i];
         if (!(bullet.posX > playerRight.posX + playerRight.width || bullet.posX + bullet.width < playerRight.posX || bullet.posY > playerRight.posY + playerRight.height || bullet.posY + bullet.height < playerRight.posY  && !end)) {
-            playerRight.hp -= 1
+            if(!bullet.isRocket){
+                playerRight.hp -= 1
+            }
+            else{
+                explosion(bullet)
+            }
             leftsBullets.splice(i, 1)
             updateHp()
-            if(playerRight.hp <= 0){
-                localScore = "1:0"
-                updateScore()
-                end = true
-                clearInterval(moveInterval);
-    
-                context.fillStyle = 'black';
-                context.textAlign = 'center';
-                context.font = '100px Comic Sans MS, sans-serif';
-                context.shadowColor = 'white';
-                context.shadowBlur = 4;
-                context.shadowOffsetX = 2;
-                context.shadowOffsetY = 2;
-    
-                // Ezt en csinaltam //Pali
-                context.fillText('A KÉK JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
-            }
+            checkEnd()
         }
     }
 
@@ -466,51 +601,33 @@ function move(){
         const element = rightsBullets[i];
         if (element.direction === "Left") {
             element.posX -= bulletSpeed;
-            drawBullet(element);
             if (element.posX < 0 - bulletHeight) {
 
                 rightsBullets.splice(i, 1)
             }
         }
-    }
-    
-    for (let i = 0; i < rightsBullets.length; i++) {
-        const element = rightsBullets[i];
-        if (element.direction === "Right") {
+        else if (element.direction === "Right") {
             element.posX += bulletSpeed;
-            drawBullet(element);
             if (element.posX > width) {
                 rightsBullets.splice(i, 1);
 
             }
         }
+        drawBullet(element);
     }
     
     for (let i = 0; i < rightsBullets.length; i++) {
         const bullet = rightsBullets[i];
         if ((!(bullet.posX > playerLeft.posX + playerLeft.width || bullet.posX + bullet.width < playerLeft.posX || bullet.posY > playerLeft.posY + playerLeft.height || bullet.posY + bullet.height < playerLeft.posY) && !end)) {
-            
-            playerLeft.hp -= 1
+            if(!bullet.isRocket){
+                playerLeft.hp -= 1
+            }
+            else{
+                explosion(bullet)
+            }
             rightsBullets.splice(i, 1)
             updateHp()
-            if(playerLeft.hp <= 0){
-                localScore = "0:1"
-                updateScore()
-                end = true
-                clearInterval(moveInterval);
-
-                context.fillStyle = 'black';
-                context.textAlign = 'center';
-                context.font = '100px Comic Sans MS, sans-serif';
-
-                context.shadowColor = 'white';
-                context.shadowBlur = 4;
-                context.shadowOffsetX = 2;
-                context.shadowOffsetY = 2;
-
-                // Ezt en csinaltam //Ezt is a Pali
-                context.fillText('A PIROS JÁTÉKOS NYERT.', canvas.width / 2, canvas.height / 2);
-            }
+            checkEnd()
         }
        
     }
@@ -521,17 +638,25 @@ function move(){
             const element1 = allPlatforms[j];
             if (!(element.posX > element1.posX + element1.width || element.posX + element.width < element1.posX || element.posY > element1.posY + element1.height || element.posY + element.height < element1.posY)) {
                 leftsBullets.splice(i, 1);
+                explosion(element)
     
             }
         }
         for (let j = 0; j < walls.length; j++) {
             const wall = walls[j];
             if (!(element.posX > wall.posX + wall.width || element.posX + element.width < wall.posX || element.posY > wall.posY + wall.height || element.posY + element.height < wall.posY)) {
-                wall.hp -= 1
+                if(element.isRocket){
+                    wall.hp -= 3
+                }
+                else{
+                    wall.hp -= 1
+                }
                 if(wall.hp <= 0){
                     walls.splice(j, 1);
                 }
                 leftsBullets.splice(i, 1);
+                explosion(element)
+
     
             }
         }
@@ -543,17 +668,24 @@ function move(){
             const element1 = allPlatforms[j];
             if (!(element.posX > element1.posX + element1.width || element.posX + element.width < element1.posX || element.posY > element1.posY + element1.height || element.posY + element.height < element1.posY)) {
                 rightsBullets.splice(i, 1);
+                explosion(element)
     
             }
         }
         for (let j = 0; j < walls.length; j++) {
             const wall = walls[j];
             if (!(element.posX > wall.posX + wall.width || element.posX + element.width < wall.posX || element.posY > wall.posY + wall.height || element.posY + element.height < wall.posY)) {
-                wall.hp -= 1
+                if(element.isRocket){
+                    wall.hp -= 3
+                }
+                else{
+                    wall.hp -= 1
+                }
                 if(wall.hp <= 0){
                     walls.splice(j, 1);
                 }
                 rightsBullets.splice(i, 1);
+                explosion(element)
     
             }
         }
@@ -693,7 +825,12 @@ function drawBullet(bullet){
 function drawWall(wall){
     // context.fillStyle = 'black';
     // context.fillRect(wall.posX, wall.posY, wall.width, wall.height);
-    context.drawImage(wallImgs[wall.hp - 1], wall.posX, wall.posY, wall.width, wall.height);
+    if (wall.hp > 0){
+        context.drawImage(wallImgs[wall.hp - 1], wall.posX, wall.posY, wall.width, wall.height);
+    }
+    else{
+        walls.splice(walls.indexOf(wall), 1)
+    }
 
 }
 
@@ -783,7 +920,7 @@ let gunPos = 77
 function ShootLeft(){
     if(playerLeft.canShoot){
         if(playerWhoHasRpg == "Left"){
-            let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: leftLastDir, isRocket: true}
+            let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: leftLastDir, isRocket: true, owner: "Left"}
             leftsBullets.push(currentLeftBullet)
             playerLeft.canShoot = false
 
@@ -813,7 +950,7 @@ function ShootLeft(){
 function ShootRight(){
     if(playerRight.canShoot){
         if(playerWhoHasRpg == "Right"){
-            let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: rightLastDir, isRocket: true}
+            let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: rightLastDir, isRocket: true, owner: "Right"}
             rightsBullets.push(currentRightBullet)
             playerRight.canShoot = false
 
@@ -879,8 +1016,17 @@ function WallRight(){
 }
 
 function weaponCall() {
-    firstDeployed = true
-    setTimeout(secondDeployed = true, timeOfWeapon);
+    if(random(1, 3) == 2){
+        firstDeployed = true
+    }
+    else{
+        secondDeployed = true
+    }
+    // setTimeout(secondDeployed = true, timeOfWeapon);
+    setTimeout(function () {
+        secondDeployed = true
+        firstDeployed = true
+    }, timeOfWeapon);
 
 }
 
