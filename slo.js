@@ -15,9 +15,11 @@ let playerRight = {posX: width - 150 - BaseWidth, posY: height - BaseHeight, wid
 
 let delayBetweenShots = 500 //ms
 let delayBetweenAkShots = 110 //ms
+let delayBetweenRpgShots = 600 //ms
 let cookie = document.cookie
 
-let timeOfAk = random(8000, 1400)
+let timeOfWeapon = random(1000, 1002)//8000, 1400
+let timeOfSecondWeapon = random(1000, 1002)//2000, 5000
 
 let xSpeed = 6
 let ySpeed = 15
@@ -45,7 +47,8 @@ let rightLastDir = "Left"
 
 let bulletSpeed = 12
 
-let akDeployed = false
+let firstDeployed = false
+let secondDeployed = false
 
 let heightOfGround = 50
 canvas.width = width
@@ -55,6 +58,8 @@ let leftsBullets = []
 let rightsBullets = []
 let bulletWidth = 40
 let bulletHeight = 10
+let rocketWidth = 55
+let rocketHeight = 15
 
 let walls = []
 let wallWidth = 50
@@ -66,6 +71,11 @@ let wallOnLeft = -85
 let wallBreakTime = 1750
 
 let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
+let rpg = {posX: -300, posY: random(200, height - 100), width: 250, height: 100, direction: "Right"}
+if (random(1, 3) == 2){
+    rpg.posX = width + 300
+    rpg.direction = "Left"
+}
 
 let leftPlayerImage = document.getElementById("leftPlayerImage");
 let leftPlayerImageLeft = document.getElementById("leftPlayerImageLeft");
@@ -87,19 +97,22 @@ let wallImg4 = document.getElementById("wall4");
 let wallImgs = [wallImg0, wallImg1, wallImg2, wallImg3, wallImg4].reverse()
 
 let bulletImg = document.getElementById("bulletImg");
+let rocketImg = document.getElementById("rocketImg");
 
 let scoreBoard = document.getElementById("points");
 
-
 let background = document.getElementById("background");
+
 let akImg = document.getElementById("ak");
+let rpgImg = document.getElementById("rpgImg");
 
 let platformImgs = [platform0, platform1, platform2]
 
 let framesBetweenAnimations = 20;
 let frames = 0
 
-let playerWhoHasAk;
+let playerWhoHasAk = "None";
+let playerWhoHasRpg = "None";
 
 let hpBar = {width: 110, height: 20}
 
@@ -226,43 +239,6 @@ function move(){
     
     }
 
-    if(akDeployed){
-
-        // context.fillStyle = 'yellow';
-        // context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
-        context.drawImage(akImg, ak.posX, ak.posY, ak.width, ak.height);
-
-        if (ak.posY < 50){
-            ak.posY += xSpeed / 2
-
-        }
-        if(!(ak.posX > playerRight.posX + playerRight.width || ak.posX + ak.width < playerRight.posX || ak.posY > playerRight.posY + playerRight.height || ak.posY + ak.height < playerRight.posY)){
-            //jobb
-            ak.posX = -10000
-            ak.posY = -10000
-
-            rightPlayerImage = document.getElementById("rightPlayerImageAk");
-            rightPlayerImageLeft = document.getElementById("rightPlayerImageLeftAk");
-            rightPlayerImageRight = document.getElementById("rightPlayerImageRightAk");
-
-            playerWhoHasAk = "Right"
-        }
-        else if(!(ak.posX > playerLeft.posX + playerLeft.width || ak.posX + ak.width < playerLeft.posX || ak.posY > playerLeft.posY + playerLeft.height || ak.posY + ak.height < playerLeft.posY)){
-            //bal
-            ak.posX = -10000
-            ak.posY = -10000
-
-            leftPlayerImage = document.getElementById("leftPlayerImageAk");
-            leftPlayerImageLeft = document.getElementById("leftPlayerImageLeftAk");
-            leftPlayerImageRight = document.getElementById("leftPlayerImageRightAk");
-
-            playerWhoHasAk = "Left"
-        }
-        else{
-
-        }
-    }
-
     frames++
     if(leftRun){
         if (leftLastDir == "Right") {
@@ -337,6 +313,91 @@ function move(){
     }
 
     updateHp()
+
+    if(firstDeployed){
+
+        // context.fillStyle = 'yellow';
+        // context.fillRect(ak.posX, ak.posY, ak.width, ak.height);
+        context.drawImage(akImg, ak.posX, ak.posY, ak.width, ak.height);
+
+        if (ak.posY < 50){
+            ak.posY += xSpeed / 2
+
+        }
+        if(!(ak.posX > playerRight.posX + playerRight.width || ak.posX + ak.width < playerRight.posX || ak.posY > playerRight.posY + playerRight.height || ak.posY + ak.height < playerRight.posY) && playerWhoHasRpg != "Right"){
+            //jobb
+            ak.posX = -10000
+            ak.posY = -10000
+
+            rightPlayerImage = document.getElementById("rightPlayerImageAk");
+            rightPlayerImageLeft = document.getElementById("rightPlayerImageLeftAk");
+            rightPlayerImageRight = document.getElementById("rightPlayerImageRightAk");
+
+            playerWhoHasAk = "Right"
+        }
+        else if(!(ak.posX > playerLeft.posX + playerLeft.width || ak.posX + ak.width < playerLeft.posX || ak.posY > playerLeft.posY + playerLeft.height || ak.posY + ak.height < playerLeft.posY) && playerWhoHasRpg != "Left"){
+            //bal
+            ak.posX = -10000
+            ak.posY = -10000
+
+            leftPlayerImage = document.getElementById("leftPlayerImageAk");
+            leftPlayerImageLeft = document.getElementById("leftPlayerImageLeftAk");
+            leftPlayerImageRight = document.getElementById("leftPlayerImageRightAk");
+
+            playerWhoHasAk = "Left"
+        }
+
+        if(secondDeployed){
+            // context.fillStyle = 'yellow';
+            // context.fillRect(rpg.posX, rpg.posY, rpg.width, rpg.height);
+            if((playerWhoHasRpg == "Left" && leftLastDir == "Right") || (playerWhoHasRpg == "Right" && rightLastDir == "Right")){
+                context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
+            }
+            else if(playerWhoHasRpg  != "None"){
+                context.save();
+                context.scale(-1, 1);
+                context.drawImage(rpgImg, -rpg.posX - rpg.width, rpg.posY, rpg.width, rpg.height)
+                context.restore();
+            }
+            else{
+                context.drawImage(rpgImg, rpg.posX, rpg.posY, rpg.width, rpg.height)
+            }
+
+            if(rpg.direction == "Right"){
+                if (rpg.posX < 50){
+                    rpg.posX += xSpeed / 2
+                }
+            }
+            else{
+                if (rpg.posX > width - rpg.width - 50){
+                    rpg.posX -= xSpeed / 2
+                }
+            }
+
+            if(checkCollision(playerLeft, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Left"){
+                playerWhoHasRpg = "Left"
+                
+            }
+            if(checkCollision(playerRight, rpg) && playerWhoHasRpg == "None" && playerWhoHasAk != "Right"){
+                playerWhoHasRpg = "Right"
+                
+            }
+
+            if(playerWhoHasRpg == "Left"){
+                rpg.posX = playerLeft.posX - 10
+                rpg.posY = playerLeft.posY + 65
+                rpg.width = 100
+                rpg.height = 50
+            }
+
+            if(playerWhoHasRpg == "Right"){
+                rpg.posX = playerRight.posX - 10
+                rpg.posY = playerRight.posY + 65
+                rpg.width = 100
+                rpg.height = 50
+            }
+        }
+    }
 
     for (let i = 0; i < walls.length; i++) {
         const wall = walls[i];
@@ -561,39 +622,34 @@ function handleCollisionPlayer(player1, player2) {
     }
 }
 
-function handleCollisionWall(square1, square2)//player, wall
+function handleCollisionWall(player, wall)//player, wall
 {
-    const overlapX = Math.max(0, Math.min(square1.posX + square1.width, square2.posX + square2.width) - Math.max(square1.posX, square2.posX));
-    const overlapY = Math.max(0, Math.min(square1.posY + square1.height, square2.posY + square2.height) - Math.max(square1.posY, square2.posY));
+    const overlapX = Math.max(0, Math.min(player.posX + player.width, wall.posX + wall.width) - Math.max(player.posX, wall.posX));
+    const overlapY = Math.max(0, Math.min(player.posY + player.height, wall.posY + wall.height) - Math.max(player.posY, wall.posY));
 
     if (overlapX < overlapY) 
     {
-        if (square1.posX < square2.posX) 
+        if (player.posX < wall.posX) 
         {
-            square1.posX += -overlapX;
+            player.posX += -overlapX;
         } 
         else 
         {
-            square1.posX += overlapX;
+            player.posX += overlapX;
         }
     }
     else 
     {
-        if (square1.posY < square2.posY) 
+        if (player.posY < wall.posY)
         {
-            square1.posY = (square2.posY - BaseHeight)
-            square1.speedY = 0
-            if(square1 == playerLeft){
-                playerLeft.canJump = true
-            }
-            else{
-                playerRight.canJump = true
-            }
+            player.posY = (wall.posY - BaseHeight)
+            player.speedY = 0
+            player.canJump = true
         } 
         else 
         {
-            square1.posY = square2.posY + square2.height;
-            square1.speedY = 0
+            player.posY = wall.posY + wall.height;
+            player.speedY = 0
         }
     }
 }
@@ -619,13 +675,16 @@ function drawPlatform(platform){
 function drawBullet(bullet){
     // context.fillStyle = 'orange';
     // context.fillRect(bullet.posX, bullet.posY, bullet.width, bullet.height);
-    
+    let img = bulletImg
+    if(bullet.isRocket){
+        img = rocketImg
+    }
     if(bullet.direction == "Right")
-        context.drawImage(bulletImg, bullet.posX, bullet.posY, bullet.width, bullet.height);
+        context.drawImage(img, bullet.posX, bullet.posY, bullet.width, bullet.height);
     else{
         context.save();
         context.scale(-1, 1);
-        context.drawImage(bulletImg, -bullet.posX, bullet.posY, bullet.width, bullet.height);
+        context.drawImage(img, -bullet.posX, bullet.posY, bullet.width, bullet.height);
         context.restore();
     }
 
@@ -723,38 +782,60 @@ let gunPos = 77
 
 function ShootLeft(){
     if(playerLeft.canShoot){
-        let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: leftLastDir}
-        leftsBullets.push(currentLeftBullet)
-        playerLeft.canShoot = false
+        if(playerWhoHasRpg == "Left"){
+            let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: leftLastDir, isRocket: true}
+            leftsBullets.push(currentLeftBullet)
+            playerLeft.canShoot = false
 
-        if(playerWhoHasAk == "Left"){
             setTimeout(function () {
                 playerLeft.canShoot = true;
-            }, delayBetweenAkShots);
+            }, delayBetweenRpgShots);
         }
         else{
-            setTimeout(function () {
-                playerLeft.canShoot = true;
-            }, delayBetweenShots);
+            let currentLeftBullet = {posX: playerLeft.posX, posY: playerLeft.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: leftLastDir, isRocket: false}
+            leftsBullets.push(currentLeftBullet)
+            playerLeft.canShoot = false
+    
+            if(playerWhoHasAk == "Left"){
+                setTimeout(function () {
+                    playerLeft.canShoot = true;
+                }, delayBetweenAkShots);
+            }
+            else{
+                setTimeout(function () {
+                    playerLeft.canShoot = true;
+                }, delayBetweenShots);
+            }
         }
     }
 }
 
 function ShootRight(){
     if(playerRight.canShoot){
-        let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: rightLastDir}
-        rightsBullets.push(currentRightBullet)
-        playerRight.canShoot = false
+        if(playerWhoHasRpg == "Right"){
+            let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: rocketWidth, height: rocketHeight, direction: rightLastDir, isRocket: true}
+            rightsBullets.push(currentRightBullet)
+            playerRight.canShoot = false
 
-        if(playerWhoHasAk == "Right"){
             setTimeout(function () {
                 playerRight.canShoot = true;
-            }, delayBetweenAkShots);
+            }, delayBetweenRpgShots);
         }
         else{
-            setTimeout(function () {
-                playerRight.canShoot = true;
-            }, delayBetweenShots);
+            let currentRightBullet = {posX: playerRight.posX, posY: playerRight.posY + gunPos, width: bulletWidth, height: bulletHeight, direction: rightLastDir, isRocket: false}
+            rightsBullets.push(currentRightBullet)
+            playerRight.canShoot = false
+    
+            if(playerWhoHasAk == "Right"){
+                setTimeout(function () {
+                    playerRight.canShoot = true;
+                }, delayBetweenAkShots);
+            }
+            else{
+                setTimeout(function () {
+                    playerRight.canShoot = true;
+                }, delayBetweenShots);
+            }
         }
     }
 }
@@ -797,8 +878,10 @@ function WallRight(){
     }
 }
 
-function akCall() {
-    akDeployed = true
+function weaponCall() {
+    firstDeployed = true
+    setTimeout(secondDeployed = true, timeOfWeapon);
+
 }
 
 function wallBreak() {
@@ -816,7 +899,7 @@ let wallInterval = setInterval(wallBreak, wallBreakTime)
 
 
 function tutorial(){
-    alert('Kék(Jobb kézzel):\n   WASD: mozgás\n   E: lövés\n   Q: Fal\n   R: újrakezdés\nPiros(Jobb kézzel):\n   IJKL: mozgás\n   O: lövés\n   U: Fal\n   P: újrakezdés')
+    alert('Irányítás:\n\n   Kék(Bal kézzel):\n      WASD: mozgás\n      E: lövés\n      Q: Fal\n      R: újrakezdés\n   Piros(Bal kézzel):\n      IJKL: mozgás\n      O: lövés\n      U: Fal\n      P: újrakezdés')
 }
 
-setTimeout(akCall, timeOfAk);
+setTimeout(weaponCall, timeOfWeapon);

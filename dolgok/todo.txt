@@ -1,2 +1,2 @@
 meccs elejen legyen 3s a menekülésre mielőtt lőni lehet, countdown
-nem mindig ugrik a fal tetejerol meg neha rezeg
+a falak tetejen 1px-t rezonal

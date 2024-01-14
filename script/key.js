@@ -33,6 +33,14 @@ addEventListener("keydown", function(e){
         playerLeft.speedY = 10;
     } 
     if (e.code == leftUp){
+        for (let i = 0; i < walls.length; i++) {
+            const wall = walls[i];
+            if (checkCollision(playerLeft, wall)) {
+                handleCollisionWall(playerLeft, wall);
+            }
+        }
+
+
         if(playerLeft.canJump){
             playerLeft.speedY = -ySpeed;
             Ground = false;
@@ -54,6 +62,13 @@ addEventListener("keydown", function(e){
         playerRight.speedY = 10;
     }
     if (e.code == rightUp){
+        for (let i = 0; i < walls.length; i++) {
+            const wall = walls[i];
+            if (checkCollision(playerRight, wall)) {
+                handleCollisionWall(playerRight, wall);
+            }
+        }
+
         if(playerRight.canJump){
             playerRight.speedY = -ySpeed;
             Ground = false;
