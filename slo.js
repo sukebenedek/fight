@@ -70,6 +70,9 @@ let wallOnRight = 120
 let wallOnLeft = -85
 let wallBreakTime = 1750
 
+let healTime = generateHealTime()
+let heals = []
+
 let ak = {posX: random(0, width - 200), posY: -200, width: 250, height: 100}
 let rpg = {posX: -300, posY: random(200, height - 100 - 200), width: 250, height: 100, direction: "Right"}
 if (random(1, 3) == 2){
@@ -106,6 +109,8 @@ let background = document.getElementById("background");
 let akImg = document.getElementById("ak");
 let rpgImg = document.getElementById("rpgImg");
 
+let healImg = document.getElementById("healImg");
+
 let platformImgs = [platform0, platform1, platform2]
 
 let framesBetweenAnimations = 20;
@@ -122,7 +127,7 @@ if (cookie[0] == undefined || isNaN(cookie.split(":")[1])){
 }
 
 function generatePlatform() {
-    return {posX: random(0, width - 150), posY: random(160, height - 200), width: random(150, 220), height: random(50, 70), type: random(0, 3), isFlipped: Math.random() >= 0.5};
+    return {posX: random(0, width - 150), posY: random(160, height - 200), width: random(150, 220), height: random(50, 70), type: random(0, 3), isFlipped: Math.random() >= 0.5, hasHeal: false};
 }
 
 function checkProximity(platform, existingPlatforms, minDistance) {
@@ -312,15 +317,6 @@ function explosion(rocket) {
             }
             
         }
-
-
-
-
-        
-
-
-
-
     }   
 }
 
@@ -389,6 +385,34 @@ function move(){
     
         drawPlatform(element)
     
+    }
+
+    for (let i = 0; i < heals.length; i++) {
+        const heal = heals[i];
+    
+        context.drawImage(healImg, heal.posX, heal.posY, heal.width, heal.height);
+    }
+
+    for (let i = 0; i < heals.length; i++) {
+        const heal = heals[i];
+
+        if(checkCollision(playerLeft, heal)){
+            heals.splice(i, 1)
+            heal.itsPlatform.hasHeal = false
+            if (playerLeft.hp < maxHp){
+                playerLeft.hp += 1
+            }
+
+        }
+
+        if(checkCollision(playerRight, heal)){
+            heals.splice(i, 1)
+            heal.itsPlatform.hasHeal = false
+            if (playerRight.hp < maxHp){
+                playerRight.hp += 1
+            }
+            
+        }
     }
 
     frames++
@@ -1041,8 +1065,23 @@ function wallBreak() {
     }
 }
 
-let wallInterval = setInterval(wallBreak, wallBreakTime)
+function generateHealTime(){
+    return random(8000, 12000)
+}
 
+function healSpawn(){
+    healTime = generateHealTime()
+    let platform = allPlatforms[random(0, allPlatforms.length)]
+    if(platform.hasHeal == false){
+        platform.hasHeal = true
+
+        let heal = {posX: platform.posX + (platform.width)/2 - (platform.width - 60)/2, posY: platform.posY - (platform.width - 60) - 10, width: platform.width - 60, height: platform.width - 60, itsPlatform: platform}
+        heals.push(heal)
+    }
+}
+
+let wallInterval = setInterval(wallBreak, wallBreakTime)
+let healInterval = setInterval(healSpawn, healTime)
 
 function tutorial(){
     alert('Irányítás:\n\n   Kék(Bal kézzel):\n      WASD: mozgás\n      E: lövés\n      Q: Fal\n      R: újrakezdés\n   Piros(Bal kézzel):\n      IJKL: mozgás\n      O: lövés\n      U: Fal\n      P: újrakezdés')

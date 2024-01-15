@@ -13,6 +13,7 @@
         <input type="button"  id="startButton" value="Újrakezdés" onclick="location.reload()">
         <input type="button"  id="zeroButton" value="Pontnullázó" onclick="document.cookie = '0:0'; updateScore()">
         <input type="button"  id="play" value="Tutoriál" onclick="tutorial()">
+        <input type="button"  id="stop" value="Szünet" onclick="alert('Most szünet van.')">
 
         <div id="points">0:0</div>
     </div>
@@ -42,6 +43,7 @@
     <img id="bulletImg" src="dolgok/bullet.png" width="40" height="10">
     <img id="rpgImg" src="dolgok/rpg.png" width="250" height="100">
     <img id="rocketImg" src="dolgok/rocket.png" width="50" height="12">
+    <img id="healImg" src="dolgok/heal.png" width="500" height="500">
 </body>
 <script src="slo.js"></script>
 <script src="script/key.js"></script>
