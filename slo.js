@@ -64,7 +64,7 @@ let rocketHeight = 15
 let walls = []
 let wallWidth = 50
 let wallHeight = 175
-let delayBetweenWalls = 500 //ms
+let delayBetweenWalls = 1500 //ms
 let wallHp = 5
 let wallOnRight = 120
 let wallOnLeft = -85
@@ -1066,7 +1066,7 @@ function wallBreak() {
 }
 
 function generateHealTime(){
-    return random(8000, 12000)
+    return random(16000, 22000)
 }
 
 function healSpawn(){
